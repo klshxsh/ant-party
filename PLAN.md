@@ -132,7 +132,10 @@ Home also links to: Album · Settings
 2. ✅ **Ants**: SVG generator (8 accessories, trim colours, blinking, wobbly antennae),
    tripod-gait walk into a party tent along a full-width grassy ground, "Coach" encourager
    ant that jumps and fist-pumps, progress trail with food plates and a leader ant.
-3. **Food and party**: food pick, party scene, tap-an-ant.
+3. ✅ **Food and party**: 15 SVG foods; food pick with a flying-off animation; party scene
+   (bunting, sun, hills, tent, picnic blanket, confetti) where the round's ants walk in,
+   nibble the foods two to a dish and dance in rows; tap an ant for a speech bubble.
+   Layout scales from 1 ant/1 food up to 60 ants or 30 foods.
 4. **Memory**: album, progress heat map.
 5. **Sound**: synth SFX, music manager, placeholder WAV generator.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),

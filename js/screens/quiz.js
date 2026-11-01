@@ -190,9 +190,9 @@ AP.screens.quiz = (() => {
     trail.querySelector('.trail-fill').style.width = pct;
     trail.querySelector('.trail-count').textContent = `${done} / ${settings.partyAt}`;
     trail.querySelectorAll('.trail-plate').forEach((plate, i) => {
-      const food = foods[i] && AP.config.foods.find(f => f.id === foods[i]);
+      const food = foods[i] && AP.food.byId(foods[i]);
       plate.classList.toggle('full', !!food);
-      plate.textContent = food ? food.emoji : '';
+      plate.innerHTML = food ? AP.food.svg(food.id) : '';
       plate.title = food ? food.name : '';
     });
 

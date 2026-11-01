@@ -61,6 +61,7 @@
 
   <!-- Food choice -->
   <section class="screen screen-centre" id="screen-food" hidden>
+    <div class="food-coach" id="food-coach" aria-hidden="true"></div>
     <h2>Choose a treat for the party!</h2>
     <div class="food-choices" id="food-choices"></div>
   </section>
@@ -68,10 +69,11 @@
   <!-- Party -->
   <section class="screen" id="screen-party" hidden>
     <h2 class="party-title">🎉 Ant Party! 🎉</h2>
-    <div class="party-table" id="party-foods"></div>
-    <div class="party-ants" id="party-ants"></div>
-    <p class="party-hello" id="party-hello" role="status">Tap an ant to say hello!</p>
-    <button class="btn btn-big" id="party-home">Back home</button>
+    <div class="party-scene" id="party-scene"></div>
+    <p class="party-hint">Tap an ant to say hello!</p>
+    <div class="party-actions">
+      <button class="btn btn-big" id="party-home">Back home</button>
+    </div>
   </section>
 
   <!-- Grown-ups' settings -->
@@ -132,6 +134,7 @@
 <script src="js/questions.js"></script>
 <script src="js/ants.js"></script>
 <script src="js/scenery.js"></script>
+<script src="js/food.js"></script>
 <script src="js/round.js"></script>
 <script src="js/screens/home.js"></script>
 <script src="js/screens/quiz.js"></script>

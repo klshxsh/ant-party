@@ -17,7 +17,7 @@ from `file://`, so:
 - `node tools/check-questions.js`: question generators, weak-fact weighting, round timing.
   Exits non-zero on failure.
 - `node tools/play-round.mjs <out-dir> [WxH]`: plays a full round in headless Chrome
-  and saves screenshots (home, question, wrong answer, walking ant, food, party, settings).
+  and saves screenshots (home, question, wrong answer, walking ant, food, party arriving, party, settings).
   Exits non-zero on JS errors. Check both phone (`390x844`) and tablet (`820x1180`) sizes
   after UI changes, and look at the screenshots.
 
@@ -25,10 +25,13 @@ from `file://`, so:
 
 - Everything hangs off one global, `window.AP`. Each file is an IIFE that assigns one
   module: `AP.util`, `AP.config`, `AP.storage`/`AP.prefs`, `AP.questions`, `AP.round`,
-  `AP.ants`, `AP.scenery`, and `AP.screens.<name>` for each screen in `js/screens/`.
+  `AP.ants`, `AP.food`, `AP.scenery`, and `AP.screens.<name>` for each screen in `js/screens/`.
 - Ants are data (`AP.ants.create`) drawn by `AP.ants.render(ant, classes)` as SVG.
   Animations are CSS only, switched on by the classes `walking`, `cheer`, `dance`,
-  `face-left`; size them with `--ant-w` on any ancestor.
+  `face-left`, `eat`; size them with `--ant-w` on any ancestor.
+- Foods are SVG from `AP.food.svg(id)`; the menu (ids and names) is in `js/config.js`.
+- The party scene (`js/screens/party.js`) places everything by its base point in % of
+  the scene and sizes it in `cqw`, so it scales; `layout()` there is DOM-free.
 - Screens are `<section id="screen-<name>">` in `index.html`. `AP.show(name, ...args)`
   hides the others and calls the screen's `enter(...args)`. `init()` runs once at startup.
 - Game state is `AP.state` (`settings`, `stats`, `round`). `AP.round` and `AP.questions`

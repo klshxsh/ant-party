@@ -124,17 +124,19 @@ await click('#food-choices button');
 await sleep(900);
 
 await playUntil('party');
-await sleep(1500);
+await sleep(1000);
+await shot('6-party-arriving');
+await sleep(3500); // every ant has walked in
 await click('.party-ant');
-await sleep(300);
-await shot('6-party');
+await sleep(400);
+await shot('7-party');
 console.log('Party:', await js(`AP.state.round.ants.length`), 'ants,',
   await js(`AP.state.round.foods.join(', ')`));
 
 await click('#party-home');
 await click('#home-settings');
 await sleep(300);
-await shot('7-settings');
+await shot('8-settings');
 
 console.log(`Screenshots in ${OUT}`);
 console.log(errors.length ? `JS ERRORS:\n${errors.join('\n')}` : 'No JS errors');
