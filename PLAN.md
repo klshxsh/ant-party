@@ -14,7 +14,7 @@ questions the party starts, with every ant from the round and all the chosen foo
 | Delivery | Static files, no build step: open `index.html` in a browser |
 | N / M | Parent sets them (defaults: food every 5, party at 20) |
 | Mistakes | An encourager ant pops up ("You can do it!") with an animation, then the child retries. Parent sets max tries: unlimited (default), 1, 2 or 3. When the tries run out, the ant shows the answer and the fact comes back later in the round |
-| Question types | ×  to 12×12, ÷ from the tables, +/− to 100, +/− to 1000. Each can be switched on or off; the parent can pick which tables |
+| Question types | ×  to 12×12, ÷ from the tables, +/− to 100, +/− to 1000. Each can be switched on or off; the parent can pick which tables. Default: × and ÷ only |
 | Memory | Weak-fact tracking (wrong and slow answers come up more often) **and** a party album |
 | Food | Choose 1 of 3, drawn at random from a menu of about 15 foods |
 | Party | Ants eat and dance; tap an ant to see its question; save the party to the album |
@@ -62,7 +62,7 @@ Home ──► Round ──► question ──correct──► ant walks to the 
             │                     (tries used up → ant shows answer, fact re-queued)
             ├─ every N answers ──► Food pick (1 of 3)
             └─ after M answers ──► Party ──► save to album ──► Home
-Home also links to: Album · Settings (behind a parent gate)
+Home also links to: Album · Settings
 ```
 
 ## Components
@@ -108,7 +108,6 @@ Home also links to: Album · Settings (behind a parent gate)
 - Capped at about 50 parties so it stays within localStorage limits; the oldest drop off first.
 
 ### Settings (parent area)
-- Parent gate: hold a button for 3 seconds, or answer a two-digit × question.
 - N (food every…), M (party at…), checked so that N ≤ M.
 - Question types on/off, table picker (2–12), ranges.
 - Max tries: unlimited / 1 / 2 / 3.
@@ -139,5 +138,5 @@ Home also links to: Album · Settings (behind a parent gate)
 ## Settled details
 
 - One player. Separate profiles could come later.
-- Parent gate: a two-digit × question.
+- No parent gate: settings open straight from the home screen.
 - Food collected so far is shown on the quiz screen as a small party-table preview.

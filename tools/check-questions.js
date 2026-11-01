@@ -23,6 +23,7 @@ function check(ok, message) {
 
 // Every question's text must evaluate to its answer, within the type's range.
 const settings = JSON.parse(JSON.stringify(AP.config.defaults));
+settings.types = { mul: true, div: true, addsub100: true, addsub1000: true };
 const counts = {};
 for (let i = 0; i < 10000; i++) {
   const q = AP.questions.pickNext(settings, {}, []);

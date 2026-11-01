@@ -3,24 +3,11 @@ AP.screens = AP.screens || {};
 AP.screens.settings = (() => {
   const $ = id => document.getElementById(id);
   const TYPES = ['mul', 'div', 'addsub100', 'addsub1000'];
-  let gateAnswer = 0;
 
   function init() {
     $('set-tables').innerHTML = Array.from({ length: 12 }, (_, i) => i + 1)
       .map(n => `<label class="chip"><input type="checkbox" value="${n}"><span>×${n}</span></label>`)
       .join('');
-
-    $('gate-form').addEventListener('submit', e => {
-      e.preventDefault();
-      if (Number($('gate-answer').value) === gateAnswer) {
-        closeGate();
-        AP.show('settings');
-      } else {
-        $('gate-error').textContent = 'Not quite. Try again.';
-        $('gate-answer').select();
-      }
-    });
-    $('gate-cancel').addEventListener('click', closeGate);
 
     $('settings-form').addEventListener('submit', e => {
       e.preventDefault();
@@ -38,22 +25,6 @@ AP.screens.settings = (() => {
       AP.state.stats = {};
       AP.storage.remove('stats');
     });
-  }
-
-  // Grown-ups answer a two-digit times question to get in.
-  function openGate() {
-    const a = AP.util.rand(12, 19);
-    const b = AP.util.rand(12, 19);
-    gateAnswer = a * b;
-    $('gate-question').textContent = `${a} × ${b}`;
-    $('gate-answer').value = '';
-    $('gate-error').textContent = '';
-    $('gate').hidden = false;
-    $('gate-answer').focus();
-  }
-
-  function closeGate() {
-    $('gate').hidden = true;
   }
 
   function enter() {
@@ -86,5 +57,5 @@ AP.screens.settings = (() => {
     };
   }
 
-  return { init, enter, openGate };
+  return { init, enter };
 })();
