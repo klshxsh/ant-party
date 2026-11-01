@@ -1,0 +1,9 @@
+Let's write a web page app for learning maths.
+Start with questions from times tables but also to include simple add/subtract/divide.
+
+To reward progress, there is a theme involving an ant party.
+After each question you see a cute ant walk past on its way to the party.
+After N questions you can choose an item of food for the ant party.
+After M questions you see the ants (the same ones that walked past) with the food, enjoying the party.
+
+Ask me questions and we will put a plan together.
