@@ -3,7 +3,7 @@ AP.screens = AP.screens || {};
 AP.screens.quiz = (() => {
   const $ = id => document.getElementById(id);
   const MAX_DIGITS = 4;
-  const WALK_MS = 3200;
+  const WALK_SPEED = 0.2; // px per ms
 
   let q = null;
   let input = '';
@@ -13,6 +13,7 @@ AP.screens.quiz = (() => {
   let locked = false;
 
   function init() {
+    $('quiz-tent').innerHTML = AP.scenery.tent();
     $('quiz-keypad').addEventListener('click', e => {
       const key = e.target.closest('button[data-key]');
       if (key) press(key.dataset.key);
@@ -42,10 +43,9 @@ AP.screens.quiz = (() => {
   function enter(opts = {}) {
     if (!opts.resume) {
       AP.state.round = AP.round.create(AP.state.settings);
-      $('quiz-ground').innerHTML = '';
+      $('quiz-walkers').innerHTML = '';
     }
-    renderTrail();
-    renderFoods();
+    buildTrail();
     next();
   }
 
@@ -116,7 +116,7 @@ AP.screens.quiz = (() => {
 
     const result = AP.round.complete(round, q, firstTry);
     walk(result.ant);
-    renderTrail();
+    updateTrail(true);
 
     // Give the ant a moment to set off before changing screen.
     const later = fn => setTimeout(() => AP.state.round === round && fn(), 1000);
@@ -139,6 +139,7 @@ AP.screens.quiz = (() => {
   function showEncourager(text, reveal = false) {
     $('quiz-bubble').textContent = text;
     $('quiz-reveal-ok').hidden = !reveal;
+    $('quiz-coach').innerHTML = AP.ants.render(AP.ants.coach, ['cheer', 'face-left']);
     const el = $('quiz-encourager');
     el.hidden = false;
     el.classList.remove('pop');
@@ -152,34 +153,53 @@ AP.screens.quiz = (() => {
     $('quiz-reveal-ok').hidden = true;
   }
 
-  // The ant walks along the ground carrying its answer, while the next question appears.
+  // The ant walks along the ground into the party tent, carrying its answer on a
+  // leaf, while the next question appears.
   function walk(ant) {
     const el = document.createElement('div');
     el.className = 'walker';
-    el.style.animationDuration = `${WALK_MS}ms`;
-    el.innerHTML = `${AP.ants.render(ant)}<span class="crumb">${q.answer}</span>`;
-    $('quiz-ground').appendChild(el);
-    setTimeout(() => el.remove(), WALK_MS + 100);
+    el.style.animationDuration = `${Math.max(2500, $('quiz-walkers').offsetWidth / WALK_SPEED)}ms`;
+    el.innerHTML = `${AP.ants.render(ant, ['walking'])}<span class="leaf">${q.answer}</span>`;
+    el.addEventListener('animationend', e => e.target === el && el.remove());
+    $('quiz-walkers').appendChild(el);
   }
 
-  function renderTrail() {
-    const { done, settings } = AP.state.round;
-    const { foodEvery, partyAt } = settings;
-    let marks = '';
+  // Progress trail: a path to the tent, with a plate for each food stop. Plates fill
+  // with the chosen food, and the latest ant walks along to show how far the round is.
+  function buildTrail() {
+    const { foodEvery, partyAt } = AP.state.round.settings;
+    let plates = '';
     for (let k = foodEvery; k <= partyAt; k += foodEvery) {
-      marks += `<span class="trail-mark${k <= done ? ' got' : ''}" style="left:${(100 * k) / partyAt}%">🍰</span>`;
+      plates += `<span class="trail-plate" style="left:${(100 * k) / partyAt}%"></span>`;
     }
     $('quiz-trail').innerHTML = `
       <div class="trail-track">
-        <div class="trail-fill" style="width:${(100 * done) / partyAt}%"></div>
-        ${marks}
+        <div class="trail-fill"></div>
+        ${plates}
+        <div class="trail-leader"></div>
       </div>
-      <span class="trail-count">${done} / ${partyAt}</span>`;
+      <div class="trail-tent">${AP.scenery.tent()}</div>
+      <span class="trail-count"></span>`;
+    updateTrail(false);
   }
 
-  function renderFoods() {
-    const foods = AP.state.round.foods.map(id => AP.config.foods.find(f => f.id === id));
-    $('quiz-foods').innerHTML = foods.map(f => `<span title="${f.name}">${f.emoji}</span>`).join('');
+  function updateTrail(moved) {
+    const { done, settings, foods, ants } = AP.state.round;
+    const trail = $('quiz-trail');
+    const pct = `${(100 * done) / settings.partyAt}%`;
+    trail.querySelector('.trail-fill').style.width = pct;
+    trail.querySelector('.trail-count').textContent = `${done} / ${settings.partyAt}`;
+    trail.querySelectorAll('.trail-plate').forEach((plate, i) => {
+      const food = foods[i] && AP.config.foods.find(f => f.id === foods[i]);
+      plate.classList.toggle('full', !!food);
+      plate.textContent = food ? food.emoji : '';
+      plate.title = food ? food.name : '';
+    });
+
+    const leader = trail.querySelector('.trail-leader');
+    leader.style.left = pct;
+    leader.innerHTML = AP.ants.render(ants[ants.length - 1] || AP.ants.coach, moved ? ['walking'] : []);
+    if (moved) setTimeout(() => leader.querySelector('.ant')?.classList.remove('walking'), 600);
   }
 
   return { init, enter };

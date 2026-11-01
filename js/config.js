@@ -58,6 +58,9 @@ AP.config = {
 
   antAccessories: ['partyHat', 'bow', 'topHat', 'crown', 'flower', 'sunglasses', 'scarf', 'bowtie'],
 
+  // Bright colours for hats, bows and scarves.
+  antTrims: ['#f4c430', '#3fa9f5', '#ff7eb6', '#9b5de5', '#00c2a8', '#ff9f1c'],
+
   encouragements: [
     'You can do it!',
     'Nearly there!',

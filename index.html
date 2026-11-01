@@ -15,6 +15,7 @@
   <!-- Home -->
   <section class="screen" id="screen-home">
     <div class="home-card">
+      <div class="home-ant" id="home-ant" aria-hidden="true"></div>
       <h1 class="title">Ant Party <span>Maths</span></h1>
       <p class="tagline">Answer questions and send the ants to the party!</p>
       <button class="btn btn-big" id="home-start">Start</button>
@@ -27,7 +28,6 @@
     <header class="quiz-top">
       <button class="btn-icon" id="quiz-home" aria-label="Back to home">⌂</button>
       <div class="trail" id="quiz-trail"></div>
-      <div class="table-preview" id="quiz-foods" aria-label="Food for the party"></div>
     </header>
 
     <div class="quiz-body">
@@ -35,7 +35,7 @@
         <div class="question" id="quiz-question" aria-live="polite"></div>
         <div class="answer" id="quiz-answer" aria-live="polite"></div>
         <div class="encourager" id="quiz-encourager" hidden>
-          <div class="encourager-ant" aria-hidden="true">🐜</div>
+          <div class="encourager-ant" id="quiz-coach" aria-hidden="true"></div>
           <div class="bubble">
             <p id="quiz-bubble" role="status"></p>
             <button class="btn btn-small" id="quiz-reveal-ok" hidden>OK</button>
@@ -53,7 +53,10 @@
       </div>
     </div>
 
-    <div class="ground" id="quiz-ground" aria-hidden="true"></div>
+    <div class="ground" aria-hidden="true">
+      <div class="walkers" id="quiz-walkers"></div>
+      <div class="tent" id="quiz-tent"></div>
+    </div>
   </section>
 
   <!-- Food choice -->
@@ -128,6 +131,7 @@
 <script src="js/storage.js"></script>
 <script src="js/questions.js"></script>
 <script src="js/ants.js"></script>
+<script src="js/scenery.js"></script>
 <script src="js/round.js"></script>
 <script src="js/screens/home.js"></script>
 <script src="js/screens/quiz.js"></script>

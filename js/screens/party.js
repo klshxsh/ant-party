@@ -22,8 +22,8 @@ AP.screens.party = (() => {
       .join('');
     $('party-ants').innerHTML = ants
       .map((ant, i) => `
-        <button class="party-ant" data-index="${i}" style="animation-delay:${(i % 5) * -0.2}s">
-          ${AP.ants.render(ant)}
+        <button class="party-ant" data-index="${i}" style="--dance-delay:${(i % 5) * -0.18}s">
+          ${AP.ants.render(ant, ['dance'])}
           <span class="party-ant-name">${ant.name}</span>
         </button>`)
       .join('');

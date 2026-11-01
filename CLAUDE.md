@@ -25,7 +25,10 @@ from `file://`, so:
 
 - Everything hangs off one global, `window.AP`. Each file is an IIFE that assigns one
   module: `AP.util`, `AP.config`, `AP.storage`/`AP.prefs`, `AP.questions`, `AP.round`,
-  `AP.ants`, and `AP.screens.<name>` for each screen in `js/screens/`.
+  `AP.ants`, `AP.scenery`, and `AP.screens.<name>` for each screen in `js/screens/`.
+- Ants are data (`AP.ants.create`) drawn by `AP.ants.render(ant, classes)` as SVG.
+  Animations are CSS only, switched on by the classes `walking`, `cheer`, `dance`,
+  `face-left`; size them with `--ant-w` on any ancestor.
 - Screens are `<section id="screen-<name>">` in `index.html`. `AP.show(name, ...args)`
   hides the others and calls the screen's `enter(...args)`. `init()` runs once at startup.
 - Game state is `AP.state` (`settings`, `stats`, `round`). `AP.round` and `AP.questions`

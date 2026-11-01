@@ -31,6 +31,7 @@ body {
   color: var(--ink);
   font-family: "Fredoka", ui-rounded, "Nunito", system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden; /* the ground strip is full-bleed */
 }
 
 #app {
@@ -99,6 +100,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .title span { display: block; color: var(--leaf); }
 .tagline { font-size: 1.2rem; margin: 8px 0 28px; }
 .grownups { margin-top: 32px; font-size: 1rem; }
+.home-ant { --ant-w: 130px; margin: -12px 0 4px; }
 
 /* Quiz */
 .quiz-top {
@@ -111,13 +113,14 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 6px;
   min-width: 0;
 }
 .trail-track {
   position: relative;
   flex: 1;
-  height: 14px;
+  height: 12px;
+  margin: 0 14px;
   background: var(--card);
   border-radius: 999px;
 }
@@ -125,26 +128,36 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   height: 100%;
   background: var(--leaf);
   border-radius: 999px;
-  transition: width 400ms ease;
+  transition: width 600ms ease;
 }
-.trail-mark {
+/* A plate at each food stop, filled with the chosen food */
+.trail-plate {
   position: absolute;
   top: 50%;
+  width: 28px;
+  height: 28px;
   transform: translate(-50%, -50%);
-  font-size: 1.1rem;
-  filter: grayscale(1) opacity(0.5);
-}
-.trail-mark.got { filter: none; }
-.trail-count { font-weight: 600; white-space: nowrap; }
-
-.table-preview {
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px dashed var(--leaf-light);
   display: flex;
-  gap: 2px;
-  font-size: 1.3rem;
-  max-width: 30%;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
 }
+.trail-plate.full { border: 2px solid var(--leaf); }
+.trail-leader {
+  position: absolute;
+  bottom: 4px;
+  transform: translateX(-50%);
+  transition: left 600ms ease;
+  z-index: 1;
+  --ant-w: 36px;
+}
+.trail-tent { width: 40px; flex: none; }
+.trail-tent svg { display: block; width: 100%; }
+.trail-count { font-weight: 600; white-space: nowrap; min-width: 3.4em; text-align: right; }
 
 .quiz-body {
   flex: 1;
@@ -193,25 +206,22 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .encourager {
   position: absolute;
   right: -4px;
-  bottom: -28px;
+  bottom: -40px;
   display: flex;
   align-items: flex-end;
-  gap: 4px;
-  max-width: 75%;
+  gap: 2px;
+  max-width: 80%;
   z-index: 2;
 }
 .encourager[hidden] { display: none; }
 .encourager.pop { animation: pop-in 400ms cubic-bezier(.3, 1.6, .5, 1); }
-.encourager-ant {
-  order: 2;
-  font-size: 2.6rem;
-  animation: cheer 600ms ease-in-out 2;
-}
+.encourager-ant { order: 2; flex: none; --ant-w: 88px; }
 .bubble {
   background: var(--warm);
   color: var(--ink);
   border-radius: 18px 18px 4px 18px;
   padding: 10px 14px;
+  margin-bottom: 30px;
   font-weight: 600;
   font-size: 1.1rem;
   text-align: left;
@@ -222,9 +232,6 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 
 @keyframes pop-in {
   from { transform: scale(0.3); opacity: 0; }
-}
-@keyframes cheer {
-  50% { transform: translateY(-10px) rotate(-12deg); }
 }
 
 /* Number pad */
@@ -253,40 +260,115 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .keypad .key-ok { background: var(--leaf); color: #fff; box-shadow: var(--press) var(--leaf-dark); }
 .keypad .key-back { color: var(--forest); }
 
-/* Ground strip where ants walk to the party */
+/* Ground strip where ants walk into the party tent. Full-bleed on wide screens. */
 .ground {
   position: relative;
-  height: 64px;
-  margin: 0 -16px -16px;
-  background: linear-gradient(var(--soil), var(--soil-dark));
-  border-top: 8px solid var(--leaf);
-  overflow: hidden;
+  height: 84px;
+  margin: 0 calc(50% - 50vw) -16px;
+  background: linear-gradient(var(--leaf) 0 6px, var(--soil) 6px, var(--soil-dark));
 }
+.ground::before { /* grass tufts along the top edge */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% - 1px);
+  height: 14px;
+  background: var(--leaf);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 16'%3E%3Cpath d='M0 16L3 6L6 16L9 2L13 16L16 8L19 16L23 3L26 16L29 7L32 16Z'/%3E%3C/svg%3E") bottom / 32px 14px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 16'%3E%3Cpath d='M0 16L3 6L6 16L9 2L13 16L16 8L19 16L23 3L26 16L29 7L32 16Z'/%3E%3C/svg%3E") bottom / 32px 14px repeat-x;
+}
+.walkers { position: absolute; inset: 0; overflow: hidden; }
+.tent {
+  position: absolute;
+  right: 12px;
+  bottom: 18px;
+  width: 92px;
+  z-index: 1; /* ants walk in behind the tent's front */
+}
+.tent svg { display: block; width: 100%; }
 .walker {
   position: absolute;
-  bottom: 10px;
+  bottom: 14px;
   left: -80px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
+  --ant-w: 72px;
   animation: walk linear forwards;
 }
-.walker .crumb {
+/* The answer, carried on a leaf on the ant's back */
+.leaf {
+  position: absolute;
+  left: 4px;
+  bottom: 31px;
+  padding: 0 7px;
   font-weight: 700;
-  font-size: 0.9rem;
-  background: var(--card);
-  border-radius: 8px;
-  padding: 0 6px;
-  order: 2;
+  font-size: 0.8rem;
+  color: var(--ink);
+  background: var(--leaf-light);
+  border: 2px solid var(--leaf-dark);
+  border-radius: 0 60% 0 60%;
+  transform: rotate(-8deg);
+  animation: bob 180ms ease-in-out infinite alternate;
 }
 @keyframes walk {
-  to { left: calc(100% + 20px); }
+  90% { opacity: 1; }
+  to { left: calc(100% - 88px); opacity: 0; }
 }
 
-.ant-placeholder {
+/* Ants (see js/ants.js). Size with --ant-w on any ancestor. */
+.ant {
   display: inline-block;
-  font-size: 2rem;
-  transform: scaleX(-1); /* face right, towards the party */
+  width: calc(var(--ant-w, 64px) * var(--ant-scale, 1));
+  line-height: 0;
+}
+.ant svg { width: 100%; height: auto; overflow: visible; }
+.ant.face-left svg { transform: scaleX(-1); }
+.ant .leg,
+.ant .antenna { transform-box: view-box; }
+.ant .antenna { animation: antenna 1.6s ease-in-out infinite alternate; }
+.ant .antenna.b { animation-delay: -0.8s; }
+.ant .eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 5s infinite;
+}
+.ant.walking .leg,
+.ant.dance .leg { animation: leg-swing 0.36s ease-in-out infinite alternate; }
+.ant.walking .leg.b,
+.ant.dance .leg.b { animation-delay: -0.36s; }
+.ant.walking .ant-body { animation: bob 0.18s ease-in-out infinite alternate; }
+.ant.cheer .ant-body,
+.ant.dance .ant-body {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.ant.cheer .ant-body { animation: cheer-jump 0.5s ease-in-out 3; }
+.ant.cheer .leg.front.near { animation: fist-pump 0.25s ease-in-out 6 alternate; }
+.ant.dance .ant-body { animation: dance-bop 0.9s ease-in-out infinite; animation-delay: var(--dance-delay, 0s); }
+
+@keyframes leg-swing {
+  from { transform: rotate(-16deg); }
+  to { transform: rotate(16deg); }
+}
+@keyframes bob {
+  to { translate: 0 -1.5px; }
+}
+@keyframes antenna {
+  from { transform: rotate(-6deg); }
+  to { transform: rotate(8deg); }
+}
+@keyframes blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.1); }
+}
+@keyframes cheer-jump {
+  45% { transform: translateY(-12px) rotate(-8deg); }
+}
+@keyframes fist-pump {
+  to { transform: rotate(-80deg); }
+}
+@keyframes dance-bop {
+  25% { transform: translateY(-6px) rotate(-5deg); }
+  75% { transform: translateY(-6px) rotate(5deg); }
 }
 
 /* Food choice */
@@ -347,16 +429,13 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: dance 900ms ease-in-out infinite;
+  --ant-w: 60px;
 }
 .party-ant-name { font-size: 0.85rem; font-weight: 600; }
 .party-hello {
   min-height: 2.6em;
   font-size: 1.2rem;
   font-weight: 600;
-}
-@keyframes dance {
-  50% { transform: translateY(-8px) rotate(6deg); }
 }
 
 /* Settings */

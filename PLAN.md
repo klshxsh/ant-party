@@ -35,6 +35,7 @@ ant_party/
     questions.js      generators + weighted picker
     round.js          round state: counting, retry queue, food/party triggers
     ants.js           SVG ant generator (traits → SVG), animations
+    scenery.js        party tent and other scenery SVG
     food.js           SVG food icons
     audio.js          synth SFX + music player for the files in audio/
     screens/          home, quiz, food-pick, party, album, settings
@@ -128,7 +129,9 @@ Home also links to: Album · Settings
 1. ✅ **Core loop**: screens, number pad, question generators, settings with N/M/mistake
    options, basic home → round → done flow, using emoji placeholders. The weak-fact
    weighting and retry queue were built here too. Check with `node tools/check-questions.js`.
-2. **Ants**: SVG generator, walk animation, encourager ant, progress trail.
+2. ✅ **Ants**: SVG generator (8 accessories, trim colours, blinking, wobbly antennae),
+   tripod-gait walk into a party tent along a full-width grassy ground, "Coach" encourager
+   ant that jumps and fist-pumps, progress trail with food plates and a leader ant.
 3. **Food and party**: food pick, party scene, tap-an-ant.
 4. **Memory**: album, progress heat map.
 5. **Sound**: synth SFX, music manager, placeholder WAV generator.
@@ -139,4 +142,5 @@ Home also links to: Album · Settings
 
 - One player. Separate profiles could come later.
 - No parent gate: settings open straight from the home screen.
-- Food collected so far is shown on the quiz screen as a small party-table preview.
+- Food collected so far is shown on the quiz screen in the progress trail's plates
+  (this replaced the separate party-table preview).
