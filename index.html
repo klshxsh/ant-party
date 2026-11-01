@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ant Party Maths</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- Home -->
+  <section class="screen" id="screen-home">
+    <div class="home-card">
+      <h1 class="title">Ant Party <span>Maths</span></h1>
+      <p class="tagline">Answer questions and send the ants to the party!</p>
+      <button class="btn btn-big" id="home-start">Start</button>
+    </div>
+    <button class="btn btn-quiet grownups" id="home-settings">⚙️ Grown-ups</button>
+  </section>
+
+  <!-- Questions -->
+  <section class="screen" id="screen-quiz" hidden>
+    <header class="quiz-top">
+      <button class="btn-icon" id="quiz-home" aria-label="Back to home">⌂</button>
+      <div class="trail" id="quiz-trail"></div>
+      <div class="table-preview" id="quiz-foods" aria-label="Food for the party"></div>
+    </header>
+
+    <div class="quiz-body">
+      <div class="question-card">
+        <div class="question" id="quiz-question" aria-live="polite"></div>
+        <div class="answer" id="quiz-answer" aria-live="polite"></div>
+        <div class="encourager" id="quiz-encourager" hidden>
+          <div class="encourager-ant" aria-hidden="true">🐜</div>
+          <div class="bubble">
+            <p id="quiz-bubble" role="status"></p>
+            <button class="btn btn-small" id="quiz-reveal-ok" hidden>OK</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="keypad" id="quiz-keypad">
+        <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+        <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+        <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+        <button data-key="back" class="key-back" aria-label="Delete">⌫</button>
+        <button data-key="0">0</button>
+        <button data-key="ok" class="key-ok" aria-label="Check answer">✓</button>
+      </div>
+    </div>
+
+    <div class="ground" id="quiz-ground" aria-hidden="true"></div>
+  </section>
+
+  <!-- Food choice -->
+  <section class="screen screen-centre" id="screen-food" hidden>
+    <h2>Choose a treat for the party!</h2>
+    <div class="food-choices" id="food-choices"></div>
+  </section>
+
+  <!-- Party -->
+  <section class="screen" id="screen-party" hidden>
+    <h2 class="party-title">🎉 Ant Party! 🎉</h2>
+    <div class="party-table" id="party-foods"></div>
+    <div class="party-ants" id="party-ants"></div>
+    <p class="party-hello" id="party-hello" role="status">Tap an ant to say hello!</p>
+    <button class="btn btn-big" id="party-home">Back home</button>
+  </section>
+
+  <!-- Grown-ups' settings -->
+  <section class="screen" id="screen-settings" hidden>
+    <h2>Grown-ups' settings</h2>
+    <form id="settings-form" class="settings" novalidate>
+      <fieldset>
+        <legend>Rewards</legend>
+        <label class="row">Choose a food every
+          <input type="number" id="set-food-every" min="1" max="25" inputmode="numeric"> questions</label>
+        <label class="row">Party after
+          <input type="number" id="set-party-at" min="1" max="60" inputmode="numeric"> questions</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Mistakes</legend>
+        <label class="row">Tries before the ant shows the answer
+          <select id="set-max-tries">
+            <option value="0">Unlimited</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Questions</legend>
+        <label class="check"><input type="checkbox" id="set-type-mul"> Times tables (×)</label>
+        <label class="check"><input type="checkbox" id="set-type-div"> Division from the tables (÷)</label>
+        <label class="check"><input type="checkbox" id="set-type-addsub100"> Add and subtract to 100</label>
+        <label class="check"><input type="checkbox" id="set-type-addsub1000"> Add and subtract to 1000</label>
+        <p class="hint">Which times tables (used for × and ÷):</p>
+        <div class="tables" id="set-tables"></div>
+        <label class="check"><input type="checkbox" id="set-skip-easy"> Skip the easy ×1 and ×10 facts</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sound</legend>
+        <label class="check"><input type="checkbox" id="set-sfx"> Sound effects</label>
+        <label class="check"><input type="checkbox" id="set-music"> Music</label>
+      </fieldset>
+
+      <p class="form-error" id="settings-error" role="alert"></p>
+      <div class="settings-actions">
+        <button type="button" class="btn btn-quiet" id="settings-cancel">Cancel</button>
+        <button type="submit" class="btn">Save</button>
+      </div>
+      <button type="button" class="btn btn-danger" id="settings-reset">Reset learning progress</button>
+    </form>
+  </section>
+
+  <!-- Parent gate -->
+  <div class="modal" id="gate" hidden>
+    <form class="modal-card" id="gate-form" novalidate>
+      <h2>Grown-ups only</h2>
+      <p>What is <strong id="gate-question"></strong>?</p>
+      <input id="gate-answer" inputmode="numeric" autocomplete="off" aria-label="Answer">
+      <p class="form-error" id="gate-error" role="alert"></p>
+      <div class="settings-actions">
+        <button type="button" class="btn btn-quiet" id="gate-cancel">Cancel</button>
+        <button type="submit" class="btn">Go</button>
+      </div>
+    </form>
+  </div>
+
+</main>
+
+<script src="js/util.js"></script>
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/ants.js"></script>
+<script src="js/round.js"></script>
+<script src="js/screens/home.js"></script>
+<script src="js/screens/quiz.js"></script>
+<script src="js/screens/food.js"></script>
+<script src="js/screens/party.js"></script>
+<script src="js/screens/settings.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

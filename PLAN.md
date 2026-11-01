@@ -29,9 +29,11 @@ ant_party/
   index.html          markup + screen containers
   style.css
   js/
+    util.js           small random/shuffle helpers
     config.js         defaults, food menu, audio manifest (filenames → roles)
-    storage.js        localStorage wrapper (try/catch, safe defaults)
+    storage.js        localStorage wrapper (try/catch, safe defaults) + settings validation
     questions.js      generators + weighted picker
+    round.js          round state: counting, retry queue, food/party triggers
     ants.js           SVG ant generator (traits → SVG), animations
     food.js           SVG food icons
     audio.js          synth SFX + music player for the files in audio/
@@ -124,17 +126,18 @@ Home also links to: Album · Settings (behind a parent gate)
 
 ## Build phases
 
-1. **Core loop**: screens, number pad, question generators, settings with N/M/mistake
-   options, basic home → round → done flow. *Check: play a full round with placeholder boxes.*
+1. ✅ **Core loop**: screens, number pad, question generators, settings with N/M/mistake
+   options, basic home → round → done flow, using emoji placeholders. The weak-fact
+   weighting and retry queue were built here too. Check with `node tools/check-questions.js`.
 2. **Ants**: SVG generator, walk animation, encourager ant, progress trail.
 3. **Food and party**: food pick, party scene, tap-an-ant.
-4. **Memory**: weak-fact weighting, album, progress heat map.
+4. **Memory**: album, progress heat map.
 5. **Sound**: synth SFX, music manager, placeholder WAV generator.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
    check the question distributions with a quick script over 10,000 picks.
 
-## Open questions (defaults in brackets)
+## Settled details
 
-- One child or several? [One player. Separate profiles could come later.]
-- Should the parent gate be stronger than a long press? [Long press or a × question.]
-- Show the food on the quiz screen as it's collected? [Yes, as a small table preview.]
+- One player. Separate profiles could come later.
+- Parent gate: a two-digit × question.
+- Food collected so far is shown on the quiz screen as a small party-table preview.
