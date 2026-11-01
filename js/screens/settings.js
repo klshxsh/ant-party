@@ -17,6 +17,7 @@ AP.screens.settings = (() => {
       if (problems.length) return;
       AP.state.settings = AP.prefs.normalise(candidate);
       AP.prefs.save(AP.state.settings);
+      AP.audio.update();
       AP.show('home');
     });
     $('settings-cancel').addEventListener('click', () => AP.show('home'));
@@ -43,6 +44,7 @@ AP.screens.settings = (() => {
     $('set-skip-easy').checked = s.skipEasy;
     $('set-sfx').checked = s.sfx;
     $('set-music').checked = s.music;
+    $('set-volume').value = s.volume;
     $('settings-error').textContent = '';
   }
 
@@ -58,6 +60,8 @@ AP.screens.settings = (() => {
       skipEasy: $('set-skip-easy').checked,
       sfx: $('set-sfx').checked,
       music: $('set-music').checked,
+      volume: Number($('set-volume').value),
+      muted: AP.state.settings.muted, // set by the mute button, not this form
     };
   }
 

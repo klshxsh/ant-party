@@ -131,6 +131,7 @@ AP.screens.party = (() => {
     $('party-save').hidden = fromAlbum;
     showSaved(!fromAlbum && party.savedToAlbum);
     draw();
+    AP.audio.sfx('whoosh');
   }
 
   function save() {
@@ -207,6 +208,7 @@ AP.screens.party = (() => {
     btn.classList.remove('hop');
     void btn.offsetWidth;
     btn.classList.add('hop');
+    AP.audio.sfx('hello');
 
     bubble.innerHTML = `<strong>I'm ${ant.name}!</strong><br>I carried ${ant.fact} 🎉`;
     bubble.hidden = false;

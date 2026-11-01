@@ -80,6 +80,7 @@ AP.screens.quiz = (() => {
     locked = true;
     hideEncourager();
     renderAnswer('right');
+    AP.audio.sfx('correct');
     const round = AP.state.round;
     setTimeout(() => AP.state.round === round && finish(tries === 0), 600);
   }
@@ -88,6 +89,7 @@ AP.screens.quiz = (() => {
     tries += 1;
     locked = true;
     renderAnswer('wrong');
+    AP.audio.sfx('wrong');
     const max = AP.state.round.settings.maxTries;
     if (max && tries >= max) {
       showEncourager(`It's ${q.text} = ${q.answer}. We'll try that one again soon!`, true);
@@ -162,6 +164,7 @@ AP.screens.quiz = (() => {
     el.innerHTML = `${AP.ants.render(ant, ['walking'])}<span class="leaf">${q.answer}</span>`;
     el.addEventListener('animationend', e => e.target === el && el.remove());
     $('quiz-walkers').appendChild(el);
+    AP.audio.sfx('steps');
   }
 
   // Progress trail: a path to the tent, with a plate for each food stop. Plates fill

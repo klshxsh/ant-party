@@ -11,6 +11,7 @@
 </head>
 <body>
 <main id="app">
+  <button class="btn-icon mute" id="mute" aria-label="Mute"></button>
 
   <!-- Home -->
   <section class="screen" id="screen-home">
@@ -132,6 +133,8 @@
         <legend>Sound</legend>
         <label class="check"><input type="checkbox" id="set-sfx"> Sound effects</label>
         <label class="check"><input type="checkbox" id="set-music"> Music</label>
+        <label class="row">Music volume
+          <input type="range" id="set-volume" min="0" max="100" step="10"></label>
       </fieldset>
 
       <p class="form-error" id="settings-error" role="alert"></p>
@@ -174,6 +177,7 @@
 <script src="js/scenery.js"></script>
 <script src="js/food.js"></script>
 <script src="js/album.js"></script>
+<script src="js/audio.js"></script>
 <script src="js/round.js"></script>
 <script src="js/screens/home.js"></script>
 <script src="js/screens/quiz.js"></script>

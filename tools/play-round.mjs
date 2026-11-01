@@ -73,6 +73,7 @@ const shot = async name => {
 };
 const click = sel => js(`document.querySelector(${JSON.stringify(sel)}).click()`);
 const visible = screen => js(`!document.getElementById('screen-${screen}').hidden`);
+const music = async where => console.log(`Music ${where}:`, (await js(`AP.audio.playing().join(', ')`)) || '(none)');
 
 // --- Game helpers ---
 const typeAnswer = async n => {
@@ -108,6 +109,8 @@ await shot('1-home');
 await click('#home-start');
 await sleep(400);
 await shot('2-question');
+await sleep(800); // the crossfade
+await music('during questions');
 
 const answer = await currentAnswer();
 await typeAnswer(answer + 1);
@@ -120,6 +123,8 @@ await shot('4-walking');
 
 await playUntil('food');
 await shot('5-food');
+await sleep(300);
+await music('choosing food');
 await click('#food-choices button');
 await sleep(900);
 
@@ -130,6 +135,12 @@ await sleep(3500); // every ant has walked in
 await click('.party-ant');
 await sleep(400);
 await shot('7-party');
+await music('at the party');
+await click('#mute');
+console.log('Muted:', await js(`AP.state.settings.muted`), '/ music:', (await js(`AP.audio.playing().join(', ')`)) || '(none)');
+await click('#mute');
+await sleep(800);
+await music('after unmuting');
 console.log('Party:', await js(`AP.state.round.ants.length`), 'ants,',
   await js(`AP.state.round.foods.join(', ')`));
 
@@ -150,6 +161,9 @@ await click('#album-home');
 await click('#home-settings');
 await sleep(300);
 await shot('10-settings');
+await js(`document.getElementById('set-volume').scrollIntoView({ block: 'center' })`);
+await shot('10-settings-sound');
+await js(`scrollTo(0, 0)`);
 await click('#settings-progress');
 await sleep(300);
 await click('.hm-cell.strong, .hm-cell.getting, .hm-cell.tricky');

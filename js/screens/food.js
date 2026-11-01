@@ -11,6 +11,7 @@ AP.screens.food = (() => {
       if (!card || card.disabled) return;
       $('food-choices').querySelectorAll('button').forEach(b => (b.disabled = true));
       card.classList.add('chosen'); // the food flies off to the party
+      AP.audio.sfx('pop');
       AP.state.round.foods.push(card.dataset.id);
       setTimeout(() => (partyNext ? AP.show('party') : AP.show('quiz', { resume: true })), 900);
     });

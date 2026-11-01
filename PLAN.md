@@ -113,7 +113,7 @@ Home also links to: Album · Settings
 - N (food every…), M (party at…), checked so that N ≤ M.
 - Question types on/off, table picker (2–12), ranges.
 - Max tries: unlimited / 1 / 2 / 3.
-- Sound effects on/off, music on/off and volume.
+- Sound effects on/off, music on/off and music volume.
 - **Progress view**: a 12×12 table heat map of accuracy and speed, and a list of the
   weakest +/− skills.
 - Reset progress, clear album.
@@ -141,7 +141,11 @@ Home also links to: Album · Settings
    where each party can be replayed; grown-ups' Progress screen with a 12×12 × / ÷ grid
    (strong / getting there / tricky / not tried, with symbols as well as colours) and the
    +/− skills list; "Clear party album" in settings.
-5. **Sound**: synth SFX, music manager, placeholder WAV generator.
+5. ✅ **Sound**: Web Audio effects (correct chime, soft boop, footsteps, food pop, party
+   whoosh, an ant's hello); music crossfades between screens (home tune also on the album
+   and grown-ups' screens, quieter quiz loop, one-shot food jingle, party loop); mute button
+   on every screen (remembered); music volume in settings. Placeholder chiptune WAVs come
+   from `tools/make-placeholder-audio.py`.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
    check the question distributions with a quick script over 10,000 picks.
 

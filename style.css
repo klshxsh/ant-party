@@ -91,6 +91,20 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   cursor: pointer;
 }
 
+/* Mute button: top right on every screen, so the header rows leave room for it */
+#app { position: relative; }
+.mute {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+}
+.mute svg { width: 26px; height: 26px; }
+.mute[aria-pressed="true"] { background: var(--meadow); }
+.quiz-top, .screen-top { padding-right: 60px; }
+
 /* Home */
 #screen-home { justify-content: center; align-items: center; text-align: center; }
 .home-card {
@@ -444,7 +458,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 
 /* Party */
 #screen-party { align-items: center; text-align: center; padding-bottom: 8px; }
-.party-title { font-size: 2rem; margin-bottom: 8px; }
+.party-title { font-size: 2rem; margin-bottom: 8px; padding: 0 56px; }
 .party-scene {
   position: relative;
   width: 100%;
@@ -579,6 +593,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   color: var(--ink);
 }
 .settings input[type="number"] { width: 5em; }
+.settings input[type="range"] { flex: 1; min-width: 160px; max-width: 320px; accent-color: var(--leaf); }
 .check { display: flex; align-items: center; gap: 10px; }
 .check input { width: 22px; height: 22px; accent-color: var(--leaf); }
 .hint { margin: 6px 0 0; font-size: 0.95rem; }

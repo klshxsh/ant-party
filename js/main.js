@@ -13,7 +13,9 @@ AP.show = (name, ...args) => {
   });
   const screen = AP.screens[name];
   if (screen.enter) screen.enter(...args);
+  AP.audio.screen(name);
 };
 
+AP.audio.init();
 Object.values(AP.screens).forEach(screen => screen.init && screen.init());
 AP.show('home');

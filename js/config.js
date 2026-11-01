@@ -10,19 +10,24 @@ AP.config = {
     skipEasy: true, // leave out ×1 and ×10 as the second factor
     sfx: true,
     music: true,
+    volume: 70,     // music volume, 0–100
+    muted: false,   // the mute button on every screen
   },
 
   limits: {
     foodEvery: [1, 25],
     partyAt: [1, 60],
+    volume: [0, 100],
   },
 
-  // Music files, by the screen they play on. Swap in your own files here.
+  // Music files. Swap in your own here: any format the browser plays (mp3, ogg, m4a,
+  // wav). A missing file is skipped quietly. volume is relative to the music setting;
+  // loop: false plays once each time. home also plays on the album and grown-ups' screens.
   music: {
-    home: 'audio/main-theme.wav',
-    quiz: 'audio/quiz-theme.wav',
-    food: 'audio/food-jingle.wav',
-    party: 'audio/party-theme.wav',
+    home: { src: 'audio/main-theme.wav' },
+    quiz: { src: 'audio/quiz-theme.wav', volume: 0.5 },
+    food: { src: 'audio/food-jingle.wav', loop: false },
+    party: { src: 'audio/party-theme.wav' },
   },
 
   // Drawn by AP.food.svg(id) in js/food.js.
