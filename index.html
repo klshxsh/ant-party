@@ -20,7 +20,10 @@
       <p class="tagline">Answer questions and send the ants to the party!</p>
       <button class="btn btn-big" id="home-start">Start</button>
     </div>
-    <button class="btn btn-quiet grownups" id="home-settings">⚙️ Grown-ups</button>
+    <div class="home-links">
+      <button class="btn btn-quiet" id="home-album">📸 Party album</button>
+      <button class="btn btn-quiet" id="home-settings">⚙️ Grown-ups</button>
+    </div>
   </section>
 
   <!-- Questions -->
@@ -68,17 +71,31 @@
 
   <!-- Party -->
   <section class="screen" id="screen-party" hidden>
-    <h2 class="party-title">🎉 Ant Party! 🎉</h2>
+    <h2 class="party-title" id="party-title"></h2>
     <div class="party-scene" id="party-scene"></div>
     <p class="party-hint">Tap an ant to say hello!</p>
     <div class="party-actions">
-      <button class="btn btn-big" id="party-home">Back home</button>
+      <button class="btn btn-quiet" id="party-save"></button>
+      <button class="btn" id="party-home">Back home</button>
     </div>
+  </section>
+
+  <!-- Party album -->
+  <section class="screen" id="screen-album" hidden>
+    <header class="screen-top">
+      <button class="btn-icon" id="album-home" aria-label="Back to home">⌂</button>
+      <h2>Party album</h2>
+    </header>
+    <p class="album-empty" id="album-empty" hidden>No parties yet. Finish a round, then save the party to see it here!</p>
+    <div class="album-grid" id="album-grid"></div>
   </section>
 
   <!-- Grown-ups' settings -->
   <section class="screen" id="screen-settings" hidden>
-    <h2>Grown-ups' settings</h2>
+    <header class="screen-top">
+      <h2>Grown-ups' settings</h2>
+      <button type="button" class="btn btn-quiet btn-small" id="settings-progress">📊 Progress</button>
+    </header>
     <form id="settings-form" class="settings" novalidate>
       <fieldset>
         <legend>Rewards</legend>
@@ -122,8 +139,29 @@
         <button type="button" class="btn btn-quiet" id="settings-cancel">Cancel</button>
         <button type="submit" class="btn">Save</button>
       </div>
-      <button type="button" class="btn btn-danger" id="settings-reset">Reset learning progress</button>
+      <div class="danger-zone">
+        <button type="button" class="btn btn-danger" id="settings-reset">Reset learning progress</button>
+        <button type="button" class="btn btn-danger" id="settings-clear-album">Clear party album</button>
+      </div>
     </form>
+  </section>
+
+  <!-- Grown-ups' progress view -->
+  <section class="screen" id="screen-progress" hidden>
+    <header class="screen-top">
+      <button class="btn-icon" id="progress-back" aria-label="Back to settings">←</button>
+      <h2>Progress</h2>
+    </header>
+    <div class="progress-tabs" id="progress-tabs" role="tablist">
+      <button role="tab" data-mode="mul">× Times tables</button>
+      <button role="tab" data-mode="div">÷ Division</button>
+    </div>
+    <div class="heatmap" id="progress-grid"></div>
+    <p class="progress-detail" id="progress-detail" role="status"></p>
+    <div class="progress-counts" id="progress-counts"></div>
+    <p class="hint">Faded rows are tables that are switched off in settings.</p>
+    <h3>Adding and subtracting</h3>
+    <ul class="skills" id="progress-skills"></ul>
   </section>
 
 </main>
@@ -135,12 +173,15 @@
 <script src="js/ants.js"></script>
 <script src="js/scenery.js"></script>
 <script src="js/food.js"></script>
+<script src="js/album.js"></script>
 <script src="js/round.js"></script>
 <script src="js/screens/home.js"></script>
 <script src="js/screens/quiz.js"></script>
 <script src="js/screens/food.js"></script>
 <script src="js/screens/party.js"></script>
 <script src="js/screens/settings.js"></script>
+<script src="js/screens/album.js"></script>
+<script src="js/screens/progress.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

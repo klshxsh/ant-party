@@ -133,5 +133,13 @@ AP.questions = (() => {
       : { n: 1, err: miss, ms: Math.round(ms) };
   }
 
-  return { pickNext, record, factsFor, enabledTypes, hasCarry, hasBorrow };
+  // How well a fact is known, for the grown-ups' progress view.
+  function rating(type, s) {
+    if (!s) return 'new';
+    if (s.err >= 0.4 || s.ms > 2 * SLOW_MS[type]) return 'tricky';
+    if (s.n < 2 || s.err >= 0.15 || s.ms > SLOW_MS[type]) return 'getting';
+    return 'strong';
+  }
+
+  return { pickNext, record, rating, factsFor, enabledTypes, hasCarry, hasBorrow };
 })();

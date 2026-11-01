@@ -17,7 +17,8 @@ from `file://`, so:
 - `node tools/check-questions.js`: question generators, weak-fact weighting, round timing.
   Exits non-zero on failure.
 - `node tools/play-round.mjs <out-dir> [WxH]`: plays a full round in headless Chrome
-  and saves screenshots (home, question, wrong answer, walking ant, food, party arriving, party, settings).
+  and saves screenshots (home, question, wrong answer, walking ant, food, party arriving, party, album,
+  saved party, settings, progress).
   Exits non-zero on JS errors. Check both phone (`390x844`) and tablet (`820x1180`) sizes
   after UI changes, and look at the screenshots.
 
@@ -25,7 +26,7 @@ from `file://`, so:
 
 - Everything hangs off one global, `window.AP`. Each file is an IIFE that assigns one
   module: `AP.util`, `AP.config`, `AP.storage`/`AP.prefs`, `AP.questions`, `AP.round`,
-  `AP.ants`, `AP.food`, `AP.scenery`, and `AP.screens.<name>` for each screen in `js/screens/`.
+  `AP.ants`, `AP.food`, `AP.scenery`, `AP.album`, and `AP.screens.<name>` for each screen in `js/screens/`.
 - Ants are data (`AP.ants.create`) drawn by `AP.ants.render(ant, classes)` as SVG.
   Animations are CSS only, switched on by the classes `walking`, `cheer`, `dance`,
   `face-left`, `eat`; size them with `--ant-w` on any ancestor.
@@ -38,6 +39,9 @@ from `file://`, so:
   are pure logic with no DOM, so `tools/check-questions.js` can load them in Node.
 - Settings defaults, the food menu, ant names/colours and the music manifest live in
   `js/config.js`. `AP.prefs.normalise` makes any stored settings safe to use.
+- `AP.questions.rating(type, stats)` gives strong / getting / tricky / new for the
+  progress view. The party screen shows either the current round or an album entry
+  (`AP.show('party', { saved: entry })`).
 - localStorage keys are prefixed `antparty.v1.`; all access goes through `AP.storage`,
   which never throws.
 - Colours are CSS variables in `:root` in `style.css`. The theme is green; ants and food

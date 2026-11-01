@@ -102,7 +102,23 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .title { font-size: clamp(2.4rem, 9vw, 3.6rem); line-height: 1.05; }
 .title span { display: block; color: var(--leaf); }
 .tagline { font-size: 1.2rem; margin: 8px 0 28px; }
-.grownups { margin-top: 32px; font-size: 1rem; }
+.home-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+.home-links .btn { font-size: 1rem; }
+
+/* Header row for the album, settings and progress screens */
+.screen-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.screen-top h2 { margin: 0; flex: 1; }
 .home-ant { --ant-w: 130px; margin: -12px 0 4px; }
 
 /* Quiz */
@@ -582,3 +598,102 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .chip input:focus-visible + span { outline: 3px solid var(--forest); outline-offset: 2px; }
 .form-error { color: var(--danger); font-weight: 600; margin: 0; min-height: 1.2em; }
 .settings-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.danger-zone { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+
+/* Party album */
+.album-empty { font-size: 1.2rem; text-align: center; margin-top: 40px; }
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+.album-card {
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 6px 0 var(--leaf-light);
+  padding: 12px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.album-date { font-weight: 700; color: var(--forest); }
+.album-foods { display: flex; flex-wrap: wrap; gap: 4px; }
+.album-foods svg { width: 34px; height: 34px; }
+.album-ants { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; --ant-w: 40px; }
+.album-more { font-weight: 700; margin-left: 4px; }
+.album-summary { font-size: 0.9rem; }
+
+/* Progress view */
+.progress-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.progress-tabs button {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--leaf-light);
+  background: var(--card);
+  color: var(--forest);
+  cursor: pointer;
+}
+.progress-tabs button[aria-selected="true"] { background: var(--leaf); border-color: var(--leaf); color: #fff; }
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+  width: 100%;
+  max-width: 520px;
+}
+.hm-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.hm-cell {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+/* A symbol as well as a colour, so the grid reads without colour vision */
+.hm-cell.strong::after { content: '✓'; }
+.hm-cell.getting::after { content: '~'; }
+.hm-cell.tricky::after { content: '!'; }
+.hm-cell.off, .hm-head.off { opacity: 0.4; }
+.swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+.hm-cell.new, .swatch.new { background: #dfe8d8; }
+.hm-cell.strong, .swatch.strong { background: var(--leaf); }
+.hm-cell.getting, .swatch.getting { background: var(--warm); }
+.hm-cell.tricky, .swatch.tricky { background: var(--wrong); }
+.progress-detail { min-height: 2.6em; font-weight: 600; margin: 10px 0 4px; }
+.progress-counts { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+#screen-progress h3 { margin: 20px 0 8px; color: var(--forest); }
+.skills { list-style: none; margin: 0; padding: 0; max-width: 520px; }
+.skills li {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: var(--card);
+  border-radius: 12px;
+}
+.skill-rating { margin-left: auto; font-weight: 600; }

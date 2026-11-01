@@ -32,13 +32,14 @@ ant_party/
     util.js           small random/shuffle helpers
     config.js         defaults, food menu, audio manifest (filenames → roles)
     storage.js        localStorage wrapper (try/catch, safe defaults) + settings validation
+    album.js          saved parties (newest first, capped at 50)
     questions.js      generators + weighted picker
     round.js          round state: counting, retry queue, food/party triggers
     ants.js           SVG ant generator (traits → SVG), animations
     scenery.js        party tent and other scenery SVG
     food.js           SVG food icons
     audio.js          synth SFX + music player for the files in audio/
-    screens/          home, quiz, food-pick, party, album, settings
+    screens/          home, quiz, food-pick, party, album, settings, progress
     main.js           state machine wiring the screens together
   audio/
     main-theme.wav    placeholder (loops on home screen)
@@ -136,7 +137,10 @@ Home also links to: Album · Settings
    (bunting, sun, hills, tent, picnic blanket, confetti) where the round's ants walk in,
    nibble the foods two to a dish and dance in rows; tap an ant for a speech bubble.
    Layout scales from 1 ant/1 food up to 60 ants or 30 foods.
-4. **Memory**: album, progress heat map.
+4. ✅ **Memory**: "Save to album" on the party; album screen (newest first, up to 50)
+   where each party can be replayed; grown-ups' Progress screen with a 12×12 × / ÷ grid
+   (strong / getting there / tricky / not tried, with symbols as well as colours) and the
+   +/− skills list; "Clear party album" in settings.
 5. **Sound**: synth SFX, music manager, placeholder WAV generator.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
    check the question distributions with a quick script over 10,000 picks.

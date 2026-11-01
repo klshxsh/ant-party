@@ -20,6 +20,10 @@ AP.screens.settings = (() => {
       AP.show('home');
     });
     $('settings-cancel').addEventListener('click', () => AP.show('home'));
+    $('settings-progress').addEventListener('click', () => AP.show('progress'));
+    $('settings-clear-album').addEventListener('click', () => {
+      if (confirm('Delete all the saved parties?')) AP.album.clear();
+    });
     $('settings-reset').addEventListener('click', () => {
       if (!confirm('Forget which facts are tricky and start fresh?')) return;
       AP.state.stats = {};

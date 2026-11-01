@@ -110,17 +110,47 @@ AP.screens.party = (() => {
   const place = (x, y, w) => `left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--w:${w.toFixed(2)}cqw;z-index:${Math.round(y * 10)}`;
 
   let bubbleTimer = 0;
+  let party = null;      // the ants and foods on show
+  let fromAlbum = false; // a saved party, rather than the round just finished
 
   function init() {
-    $('party-home').addEventListener('click', () => AP.show('home'));
+    $('party-home').addEventListener('click', () => AP.show(fromAlbum ? 'album' : 'home'));
+    $('party-save').addEventListener('click', save);
     $('party-scene').addEventListener('click', e => {
       const btn = e.target.closest('.party-ant');
       if (btn) sayHello(btn);
     });
   }
 
-  function enter() {
-    const { ants, foods } = AP.state.round;
+  // opts.saved: an album entry to show instead of the current round.
+  function enter(opts = {}) {
+    fromAlbum = !!opts.saved;
+    party = opts.saved || AP.state.round;
+    $('party-title').textContent = fromAlbum ? `Party on ${AP.album.formatDate(party.date)}` : '🎉 Ant Party! 🎉';
+    $('party-home').textContent = fromAlbum ? 'Back to album' : 'Back home';
+    $('party-save').hidden = fromAlbum;
+    showSaved(!fromAlbum && party.savedToAlbum);
+    draw();
+  }
+
+  function save() {
+    const round = AP.state.round;
+    if (round.savedToAlbum) return;
+    if (AP.album.add(round)) {
+      round.savedToAlbum = true;
+      showSaved(true);
+    } else {
+      $('party-save').textContent = "Couldn't save, sorry";
+    }
+  }
+
+  function showSaved(saved) {
+    $('party-save').disabled = saved;
+    $('party-save').textContent = saved ? 'Saved to album ✓' : '📸 Save to album';
+  }
+
+  function draw() {
+    const { ants, foods } = party;
     const plan = layout(ants.length, foods.length);
     const eaten = new Set(plan.ants.filter(a => a.role === 'eat').map(a => a.food));
 
@@ -168,7 +198,7 @@ AP.screens.party = (() => {
 
   // Tapping an ant: it hops, and says which question it carried.
   function sayHello(btn) {
-    const ant = AP.state.round.ants[Number(btn.dataset.index)];
+    const ant = party.ants[Number(btn.dataset.index)];
     const scene = $('party-scene');
     const bubble = $('party-bubble');
     const s = scene.getBoundingClientRect();

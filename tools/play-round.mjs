@@ -133,10 +133,29 @@ await shot('7-party');
 console.log('Party:', await js(`AP.state.round.ants.length`), 'ants,',
   await js(`AP.state.round.foods.join(', ')`));
 
+await click('#party-save');
+console.log('Save button:', await js(`document.getElementById('party-save').textContent`));
+
 await click('#party-home');
+await click('#home-album');
+await sleep(300);
+await shot('8-album');
+console.log('Album entries:', await js(`document.querySelectorAll('.album-card').length`));
+await click('.album-card');
+await sleep(4500);
+await shot('9-album-party');
+
+await click('#party-home'); // back to the album
+await click('#album-home');
 await click('#home-settings');
 await sleep(300);
-await shot('8-settings');
+await shot('10-settings');
+await click('#settings-progress');
+await sleep(300);
+await click('.hm-cell.strong, .hm-cell.getting, .hm-cell.tricky');
+await sleep(200);
+await shot('11-progress');
+console.log('Progress detail:', await js(`document.getElementById('progress-detail').textContent`));
 
 console.log(`Screenshots in ${OUT}`);
 console.log(errors.length ? `JS ERRORS:\n${errors.join('\n')}` : 'No JS errors');

@@ -14,11 +14,13 @@ AP.storage = (() => {
     }
   }
 
+  // Returns false if it couldn't be saved (no storage, or it's full).
   function save(name, value) {
     try {
       localStorage.setItem(PREFIX + name, JSON.stringify(value));
+      return true;
     } catch {
-      // Nothing to do: progress just won't be remembered.
+      return false;
     }
   }
 
