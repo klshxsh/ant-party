@@ -197,6 +197,14 @@ AP.audio = (() => {
       hiss(0, 0.9, { freq: 300, to: 5000, q: 1.2, gain: 0.35, attack: 0.6 });
       [1568, 2093, 2637].forEach((f, i) => tone(f, 0.7 + i * 0.08, 0.4, { gain: 0.12 }));
     },
+    // Party easter eggs: a twinkle for confetti and the sun, a boing for a wobble.
+    sparkle: () => [2093, 2637, 3136, 2637, 3520].forEach((f, i) => {
+      tone(f, i * 0.045, 0.2, { type: 'triangle', gain: 0.1 });
+    }),
+    boing: () => {
+      tone(140, 0, 0.12, { gain: 0.35, to: 520 });
+      tone(520, 0.11, 0.35, { gain: 0.25, to: 240 });
+    },
     // An ant at the party says hello.
     hello: () => {
       tone(880, 0, 0.09, { gain: 0.2, to: 1320 });

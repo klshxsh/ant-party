@@ -3,7 +3,7 @@ AP.screens = AP.screens || {};
 AP.screens.quiz = (() => {
   const $ = id => document.getElementById(id);
   const MAX_DIGITS = 4;
-  const WALK_SPEED = 0.2; // px per ms
+  const MIN_WALK_MS = 2000;
 
   let q = null;
   let input = '';
@@ -165,11 +165,17 @@ AP.screens.quiz = (() => {
   }
 
   // The ant walks along the ground into the party tent, carrying its answer on a
-  // leaf, while the next question appears.
+  // leaf, while the next question appears. Each ant has its own pace, so a quick
+  // answer can send one ant past another.
   function walk(ant) {
+    const width = $('quiz-walkers').offsetWidth;
+    const speed = AP.config.antSpeeds[AP.state.round.settings.antSpeed] * (0.7 + Math.random() * 0.65);
+    const ms = Math.max(MIN_WALK_MS, width / speed);
     const el = document.createElement('div');
     el.className = 'walker';
-    el.style.animationDuration = `${Math.max(2500, $('quiz-walkers').offsetWidth / WALK_SPEED)}ms`;
+    el.style.animationDuration = `${Math.round(ms)}ms`;
+    // Legs keep step with the pace: a stride every 36px or so.
+    el.style.setProperty('--step', `${AP.util.clamp(36 / (width / ms) / 1000, 0.18, 0.6).toFixed(2)}s`);
     el.innerHTML = `${AP.ants.render(ant, ['walking'])}<span class="leaf">${AP.util.formatNumber(q.answer)}</span>`;
     el.addEventListener('animationend', e => e.target === el && el.remove());
     $('quiz-walkers').appendChild(el);

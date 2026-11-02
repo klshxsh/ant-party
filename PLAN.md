@@ -93,7 +93,9 @@ Home also links to: Album · Settings
   party and in the album, and the album only has to store the data.
 - Animations are CSS keyframes: a three-pair leg cycle, bobbing antennae, and a walk
   across the bottom of the screen carrying the answer as a crumb. The walk runs while
-  the next question appears, so it never blocks the child.
+  the next question appears, so it never blocks the child. The parent picks the pace
+  (dawdle / stroll / scurry, default stroll) and each ant varies around it, so quick
+  answers send several ants across together and a fast one can overtake.
 - Encourager ant: pops up beside the question, fist-pump and bounce, speech bubble with
   a rotating line ("You can do it!", "Nearly!", "Have another go!").
 - A progress trail at the top of the quiz screen shows ants heading to an anthill tent,
@@ -109,6 +111,9 @@ Home also links to: Album · Settings
 - All ants from the round gather around the chosen foods: eating (nibble animation),
   dancing (bounce and spin, staggered so they don't move in sync), confetti, party theme.
 - Tap an ant to see a speech bubble: "I'm Antonio! I carried 7 × 8 = 56 🎉".
+- Easter eggs (not signposted): a tapped bunting flag swings and bursts confetti, and
+  finding every flag sets off a finale (confetti from them all, every ant hops). The sun
+  spins and winks, the tent wobbles and lets off balloons, and a food jiggles.
 - **Save to album** stores the date, the ants, the foods and the round summary.
 
 ### Album
@@ -119,6 +124,7 @@ Home also links to: Album · Settings
 - N (food every…), M (party at…), checked so that N ≤ M.
 - Question types on/off, table picker (2–12), the +/− range (smallest and biggest number).
 - Max tries: unlimited / 1 / 2 / 3.
+- Ant walking speed: dawdle / stroll / scurry.
 - Sound effects on/off, music on/off and music volume.
 - **Progress view**: a 12×12 table heat map of accuracy and speed, and the +/− sign
   patterns the current range allows, each with an example.
@@ -157,6 +163,10 @@ Home also links to: Album · Settings
    pattern; a minus key on the number pad (4-column calculator layout) whenever answers
    can be negative, and the − key on a keyboard; progress lists the sign patterns. Old
    saved settings with either +/− type switched on turn into the new type.
+5.6. ✅ **Fun extras**: party easter eggs (flags with confetti and an every-flag finale,
+   winking sun, tent balloons, jiggling food, with sparkle and boing sounds); ants walk
+   at a pace set in settings (default about half the old speed), each with its own
+   random variation, legs keeping step.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
    check the question distributions with a quick script over 10,000 picks.
 

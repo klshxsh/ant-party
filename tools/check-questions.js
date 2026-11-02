@@ -84,6 +84,8 @@ check(old.addsubMin === 1 && old.addsubMax === 20, `range clamped: ${old.addsubM
 check(AP.prefs.problems({ ...settings, addsubMin: 5 }).length === 1, 'smallest number above 1 is a problem');
 check(AP.prefs.problems({ ...settings, addsubMax: NaN }).length === 1, 'blank biggest number is a problem');
 check(AP.prefs.problems(settings).length === 0, 'defaults have no problems');
+check(AP.prefs.normalise({ antSpeed: 'scurry' }).antSpeed === 'scurry', 'ant speed kept');
+check(AP.prefs.normalise({ antSpeed: 'toString' }).antSpeed === 'stroll', 'unknown ant speed reset');
 
 // Weak facts come up more often.
 const stats = { '7x8': { n: 5, err: 1, ms: 15000 } };

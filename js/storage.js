@@ -54,6 +54,7 @@ AP.prefs = (() => {
     s.foodEvery = int(s.foodEvery, defaults.foodEvery, limits.foodEvery);
     s.partyAt = int(s.partyAt, defaults.partyAt, limits.partyAt);
     s.maxTries = int(s.maxTries, defaults.maxTries, [0, 3]);
+    if (!Object.hasOwn(AP.config.antSpeeds, s.antSpeed)) s.antSpeed = defaults.antSpeed;
     s.addsubMin = int(s.addsubMin, defaults.addsubMin, limits.addsubMin);
     s.addsubMax = int(s.addsubMax, defaults.addsubMax, limits.addsubMax);
     s.tables = Array.isArray(s.tables)

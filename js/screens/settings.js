@@ -37,6 +37,7 @@ AP.screens.settings = (() => {
     $('set-food-every').value = s.foodEvery;
     $('set-party-at').value = s.partyAt;
     $('set-max-tries').value = String(s.maxTries);
+    $('set-ant-speed').value = s.antSpeed;
     TYPES.forEach(t => ($(`set-type-${t}`).checked = !!s.types[t]));
     $('set-tables').querySelectorAll('input').forEach(box => {
       box.checked = s.tables.includes(Number(box.value));
@@ -59,6 +60,7 @@ AP.screens.settings = (() => {
       foodEvery: num('set-food-every', limits.foodEvery),
       partyAt: num('set-party-at', limits.partyAt),
       maxTries: Number($('set-max-tries').value),
+      antSpeed: $('set-ant-speed').value,
       types: Object.fromEntries(TYPES.map(t => [t, $(`set-type-${t}`).checked])),
       tables: [...$('set-tables').querySelectorAll('input:checked')].map(box => Number(box.value)),
       skipEasy: $('set-skip-easy').checked,

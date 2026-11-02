@@ -374,9 +374,9 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   animation: blink 5s infinite;
 }
 .ant.walking .leg,
-.ant.dance .leg { animation: leg-swing 0.36s ease-in-out infinite alternate; }
+.ant.dance .leg { animation: leg-swing var(--step, 0.36s) ease-in-out infinite alternate; }
 .ant.walking .leg.b,
-.ant.dance .leg.b { animation-delay: -0.36s; }
+.ant.dance .leg.b { animation-delay: calc(-1 * var(--step, 0.36s)); }
 .ant.walking .ant-body { animation: bob 0.18s ease-in-out infinite alternate; }
 .ant.cheer .ant-body,
 .ant.dance .ant-body,
@@ -491,12 +491,95 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   background: #ffd95a;
   box-shadow: 0 0 0 2cqw rgba(255, 217, 90, 0.35);
 }
+.party-sun svg { display: block; width: 100%; }
 .party-bunting {
   position: absolute;
   inset: 0 0 auto;
   width: 100%;
-  height: 13cqw;
+  height: 13cqw; /* BUNTING_H in party.js */
   z-index: 2000;
+  pointer-events: none; /* only the flags themselves can be tapped */
+}
+.party-flag {
+  pointer-events: all;
+  stroke: transparent;
+  stroke-width: 2; /* a slightly bigger target than the flag */
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+
+/* Easter eggs (see EGGS in party.js) */
+[data-egg] { cursor: pointer; }
+.party-flag.swing { animation: flag-swing 0.9s ease-out; }
+.party-sun.spin { animation: sun-spin 1s ease-in-out; }
+.party-sun.spin .wink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wink 1s;
+}
+.party-tent svg, .party-food svg { transform-origin: 50% 100%; }
+.party-tent svg.wobble { animation: wobble 0.7s ease-in-out; }
+.party-scene .party-food svg.jiggle { animation: jiggle 0.6s ease-out; } /* beats .eaten's nibble */
+.burst {
+  position: absolute;
+  width: 1.6cqw;
+  height: 0.9cqw;
+  z-index: 2001;
+  pointer-events: none;
+  animation: burst cubic-bezier(.2, .7, .4, 1) both;
+}
+.balloon {
+  position: absolute;
+  top: 22%;
+  width: 5cqw;
+  aspect-ratio: 4 / 5;
+  border-radius: 50%;
+  z-index: 1500; /* floats up behind the bunting */
+  pointer-events: none;
+  opacity: 0;
+  animation: balloon-float 3.6s ease-in both;
+}
+.balloon::after { /* the string */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 5cqw;
+  background: #5d3a1a;
+}
+@keyframes flag-swing {
+  20% { rotate: 25deg; }
+  45% { rotate: -18deg; }
+  70% { rotate: 9deg; }
+}
+@keyframes sun-spin {
+  50% { scale: 1.25; }
+  to { rotate: 360deg; }
+}
+@keyframes wink {
+  30%, 70% { scale: 1 0.1; }
+}
+@keyframes wobble {
+  20% { rotate: -6deg; }
+  40% { rotate: 5deg; }
+  60% { rotate: -3deg; }
+  80% { rotate: 2deg; }
+}
+@keyframes jiggle {
+  25% { scale: 1.15 0.85; }
+  50% { scale: 0.9 1.12; }
+  75% { scale: 1.05 0.96; }
+}
+@keyframes burst {
+  from { opacity: 1; }
+  80% { opacity: 1; }
+  to { translate: var(--dx) var(--dy); rotate: var(--spin); opacity: 0; }
+}
+@keyframes balloon-float {
+  from { opacity: 1; }
+  80% { opacity: 1; }
+  to { top: -20%; translate: var(--drift) 0; rotate: 8deg; opacity: 0; }
 }
 .party-blanket {
   position: absolute;

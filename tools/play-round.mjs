@@ -124,6 +124,7 @@ await sleep(400);
 await typeAnswer(answer);
 await sleep(900);
 await shot('4-walking');
+console.log('Walk:', await js(`[...document.querySelectorAll('.walker')].map(w => w.style.animationDuration + ' steps ' + w.style.getPropertyValue('--step')).join(', ')`));
 
 await playUntil('food');
 await shot('5-food');
@@ -140,6 +141,18 @@ await click('.party-ant');
 await sleep(400);
 await shot('7-party');
 await music('at the party');
+
+// Easter eggs: the sun, the tent, a food, then every bunting flag for the finale.
+await click('.party-sun');
+await click('.party-tent');
+await click('.party-food');
+await sleep(400);
+await shot('7-party-eggs');
+await js(`document.querySelectorAll('.party-flag').forEach(f => f.dispatchEvent(new MouseEvent('click', { bubbles: true })))`);
+await sleep(500);
+await shot('7-party-finale');
+console.log('Finale:', await js(`document.getElementById('party-bubble').textContent`),
+  '/', await js(`document.querySelectorAll('.burst').length`), 'confetti pieces');
 await click('#mute');
 console.log('Muted:', await js(`AP.state.settings.muted`), '/ music:', (await js(`AP.audio.playing().join(', ')`)) || '(none)');
 await click('#mute');

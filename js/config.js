@@ -5,6 +5,7 @@ AP.config = {
     foodEvery: 5,   // N: choose a food after this many questions
     partyAt: 20,    // M: the party starts after this many questions
     maxTries: 0,    // tries before the answer is shown; 0 = unlimited
+    antSpeed: 'stroll', // how fast the ants walk to the party (a key of antSpeeds)
     types: { mul: true, div: true, addsub: false },
     addsubMin: -20, // + and −: every number, answers too, stays in this range.
     addsubMax: 20,  // A minimum of 1 keeps them all positive.
@@ -23,6 +24,9 @@ AP.config = {
     addsubMax: [5, 1000],
     volume: [0, 100],
   },
+
+  // Walking speeds in px per ms. Each ant walks at its own pace around these.
+  antSpeeds: { dawdle: 0.06, stroll: 0.1, scurry: 0.16 },
 
   // Music files. Swap in your own here: any format the browser plays (mp3, ogg, m4a,
   // wav). A missing file is skipped quietly. volume is relative to the music setting;

@@ -10,6 +10,9 @@ AP.screens.party = (() => {
   const WALK_MS = 1800;
   const STAGGER_MS = 90;
   const BUBBLE_MS = 4000;
+  const FLAGS = 11;
+  const BUNTING_H = 13; // cqw
+  const CONFETTI_COLOURS = [...AP.config.antTrims, '#e4572e'];
 
   // Things further back (higher up the scene) are drawn smaller.
   const depth = y => 0.7 + 0.4 * (y / 100);
@@ -79,13 +82,17 @@ AP.screens.party = (() => {
     return { foods, ants };
   }
 
+  // Where flag i hangs from the rope, in the bunting's viewBox (x is also % of the scene).
+  function flagTop(i) {
+    const t = (i + 0.5) / FLAGS;
+    return { x: 100 * t, y: 2 + 20 * t * (1 - t) }; // the quadratic rope M0 2 Q50 12 100 2
+  }
+
   function bunting() {
     const colours = ['#e4572e', '#f4c430', '#3fa9f5', '#ff7eb6', '#9b5de5', '#00c2a8'];
-    const flags = Array.from({ length: 11 }, (_, i) => {
-      const t = (i + 0.5) / 11;
-      const x = 100 * t;
-      const y = 2 + 20 * t * (1 - t); // the quadratic rope M0 2 Q50 12 100 2
-      return `<path d="M${x - 3.6} ${y} L${x + 3.6} ${y} L${x} ${y + 7} Z" fill="${colours[i % colours.length]}"/>`;
+    const flags = Array.from({ length: FLAGS }, (_, i) => {
+      const { x, y } = flagTop(i);
+      return `<path class="party-flag" data-egg="flag" data-flag="${i}" d="M${x - 3.6} ${y} L${x + 3.6} ${y} L${x} ${y + 7} Z" fill="${colours[i % colours.length]}"/>`;
     }).join('');
     return `
       <svg class="party-bunting" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true">
@@ -93,8 +100,19 @@ AP.screens.party = (() => {
       </svg>`;
   }
 
+  function sun() {
+    return `
+      <div class="party-sun" data-egg="sun">
+        <svg viewBox="0 0 10 10" aria-hidden="true">
+          <circle cx="3.4" cy="4.2" r=".6" fill="#5d3a1a"/>
+          <circle class="wink" cx="6.6" cy="4.2" r=".6" fill="#5d3a1a"/>
+          <path d="M3 6 Q5 7.8 7 6" fill="none" stroke="#5d3a1a" stroke-width=".5" stroke-linecap="round"/>
+        </svg>
+      </div>`;
+  }
+
   function confetti() {
-    const colours = [...AP.config.antTrims, '#e4572e'];
+    const colours = CONFETTI_COLOURS;
     return Array.from({ length: 28 }, (_, i) => {
       const style = [
         `left:${(Math.random() * 100).toFixed(1)}%`,
@@ -112,13 +130,16 @@ AP.screens.party = (() => {
   let bubbleTimer = 0;
   let party = null;      // the ants and foods on show
   let fromAlbum = false; // a saved party, rather than the round just finished
+  let flagsTapped = new Set();
 
   function init() {
     $('party-home').addEventListener('click', () => AP.show(fromAlbum ? 'album' : 'home'));
     $('party-save').addEventListener('click', save);
     $('party-scene').addEventListener('click', e => {
       const btn = e.target.closest('.party-ant');
+      const egg = e.target.closest('[data-egg]');
       if (btn) sayHello(btn);
+      else if (egg) EGGS[egg.dataset.egg](egg);
     });
   }
 
@@ -153,10 +174,11 @@ AP.screens.party = (() => {
   function draw() {
     const { ants, foods } = party;
     const plan = layout(ants.length, foods.length);
+    flagsTapped = new Set();
     const eaten = new Set(plan.ants.filter(a => a.role === 'eat').map(a => a.food));
 
     const foodHtml = plan.foods.map((f, i) => `
-      <div class="party-item party-food${eaten.has(i) ? ' eaten' : ''}" style="${place(f.x, f.y, f.w)}" title="${AP.food.byId(foods[i]).name}">
+      <div class="party-item party-food${eaten.has(i) ? ' eaten' : ''}" data-egg="food" style="${place(f.x, f.y, f.w)}" title="${AP.food.byId(foods[i]).name}">
         ${AP.food.svg(foods[i])}
       </div>`).join('');
 
@@ -172,9 +194,9 @@ AP.screens.party = (() => {
 
     const scene = $('party-scene');
     scene.innerHTML = `
-      <div class="party-sun"></div>
+      ${sun()}
       ${bunting()}
-      <div class="party-item party-tent" style="${place(84, 33, 20)}">${AP.scenery.tent()}</div>
+      <div class="party-item party-tent" data-egg="tent" style="${place(84, 33, 20)}">${AP.scenery.tent()}</div>
       <div class="party-blanket"></div>
       ${foodHtml}
       ${antHtml}
@@ -219,6 +241,104 @@ AP.screens.party = (() => {
     void bubble.offsetWidth;
     bubble.classList.add('pop');
 
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => (bubble.hidden = true), BUBBLE_MS);
+  }
+
+  // --- Easter eggs: tap the scenery ---
+
+  // Plays a one-off CSS animation (a class) on el, then takes the class off again so
+  // any animation it replaced (a food being nibbled) carries on.
+  function wiggle(el, cls) {
+    el.classList.remove(cls);
+    void el.getBoundingClientRect();
+    el.classList.add(cls);
+    const done = e => {
+      if (e.target !== el) return;
+      el.classList.remove(cls);
+      el.removeEventListener('animationend', done);
+    };
+    el.addEventListener('animationend', done);
+  }
+
+  // Adds a short-lived piece to the scene, gone when its animation ends.
+  function spawn(className, style) {
+    const el = document.createElement('span');
+    el.className = className;
+    el.style.cssText = style;
+    el.addEventListener('animationend', () => el.remove());
+    $('party-scene').appendChild(el);
+  }
+
+  // Confetti flying out from (x % across, y cqw down), mostly downwards.
+  function burst(x, y, count, delay = 0) {
+    for (let i = 0; i < count; i++) {
+      spawn('burst', [
+        `left:${x.toFixed(1)}%`,
+        `top:${y.toFixed(1)}cqw`,
+        `background:${CONFETTI_COLOURS[i % CONFETTI_COLOURS.length]}`,
+        `--dx:${((Math.random() - 0.5) * 30).toFixed(1)}cqw`,
+        `--dy:${(Math.random() * 34 - 4).toFixed(1)}cqw`,
+        `--spin:${Math.round((Math.random() - 0.5) * 1440)}deg`,
+        `animation-duration:${(0.9 + Math.random() * 0.7).toFixed(2)}s`,
+        `animation-delay:${delay + Math.round(Math.random() * 80)}ms`,
+      ].join(';'));
+    }
+  }
+
+  const EGGS = {
+    // A flag swings and throws out confetti. Find every flag for a finale.
+    flag(el) {
+      const i = Number(el.dataset.flag);
+      const { x, y } = flagTop(i);
+      wiggle(el, 'swing');
+      burst(x, ((y + 4) / 16) * BUNTING_H, 14);
+      AP.audio.sfx('sparkle');
+      flagsTapped.add(i);
+      if (flagsTapped.size === FLAGS) finale();
+    },
+    // The sun spins and winks.
+    sun(el) {
+      wiggle(el, 'spin');
+      AP.audio.sfx('sparkle');
+    },
+    // The tent wobbles and lets off some balloons.
+    tent(el) {
+      wiggle(el.querySelector('svg'), 'wobble');
+      AP.audio.sfx('boing');
+      for (let i = 0; i < 4; i++) {
+        spawn('balloon', [
+          `left:${(80 + Math.random() * 8).toFixed(1)}%`,
+          `background:${AP.util.pick(CONFETTI_COLOURS)}`,
+          `--drift:${((Math.random() - 0.6) * 30).toFixed(1)}cqw`,
+          `animation-delay:${i * 250}ms`,
+        ].join(';'));
+      }
+    },
+    // A food jiggles like a jelly.
+    food(el) {
+      wiggle(el.querySelector('svg'), 'jiggle');
+      AP.audio.sfx('boing');
+    },
+  };
+
+  // Every flag found: confetti from all of them, a cheer, and every ant hops.
+  function finale() {
+    flagsTapped = new Set();
+    for (let i = 0; i < FLAGS; i++) {
+      const { x, y } = flagTop(i);
+      burst(x, ((y + 4) / 16) * BUNTING_H, 12, i * 60);
+    }
+    AP.audio.sfx('correct');
+    $('party-scene').querySelectorAll('.party-ant').forEach((btn, i) => {
+      setTimeout(() => wiggle(btn, 'hop'), 300 + (i % 12) * 70);
+    });
+    const bubble = $('party-bubble');
+    bubble.innerHTML = '<strong>You found every flag!</strong> 🎉';
+    bubble.hidden = false;
+    bubble.style.left = '50%';
+    bubble.style.top = `${bubble.offsetHeight + BUNTING_H * $('party-scene').offsetWidth / 100}px`;
+    wiggle(bubble, 'pop');
     clearTimeout(bubbleTimer);
     bubbleTimer = setTimeout(() => (bubble.hidden = true), BUBBLE_MS);
   }
