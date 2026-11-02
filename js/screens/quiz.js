@@ -69,6 +69,8 @@ AP.screens.quiz = (() => {
   function press(key) {
     if (locked) return;
     if (key === 'ok') return submit();
+    // The encourager has said its piece; out of the way of the next try.
+    hideEncourager();
     // input is what's typed, e.g. "-12". The minus key flips the sign at any point.
     const sign = input.startsWith('-') ? '-' : '';
     const digits = input.slice(sign.length);
@@ -190,8 +192,9 @@ AP.screens.quiz = (() => {
     for (let k = foodEvery; k <= partyAt; k += foodEvery) {
       plates += `<span class="trail-plate" style="left:${(100 * k) / partyAt}%"></span>`;
     }
+    // --plates lets the plates shrink to fit when there are lots of them.
     $('quiz-trail').innerHTML = `
-      <div class="trail-track">
+      <div class="trail-track" style="--plates:${Math.floor(partyAt / foodEvery)}">
         <div class="trail-fill"></div>
         ${plates}
         <div class="trail-leader"></div>

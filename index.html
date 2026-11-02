@@ -151,6 +151,15 @@
           <input type="range" id="set-volume" min="0" max="100" step="10"></label>
       </fieldset>
 
+      <fieldset>
+        <legend>Motion</legend>
+        <label class="check"><input type="checkbox" id="set-calm"> Gentler animations</label>
+        <p class="hint">Less bouncing, spinning and shaking, and the party confetti stays still.
+          The ants still walk to the party.</p>
+        <p class="hint" id="set-calm-device" hidden>This device asks for reduced motion, so
+          gentler animations are on whatever this says.</p>
+      </fieldset>
+
       <p class="form-error" id="settings-error" role="alert"></p>
       <div class="settings-actions">
         <button type="button" class="btn btn-quiet" id="settings-cancel">Cancel</button>

@@ -65,6 +65,7 @@ AP.prefs = (() => {
     s.music = !!s.music;
     s.volume = int(s.volume, defaults.volume, limits.volume);
     s.muted = !!s.muted;
+    s.calm = !!s.calm;
 
     if (s.foodEvery > s.partyAt) s.foodEvery = s.partyAt;
     if (!Object.values(s.types).some(Boolean)) s.types = { ...defaults.types };

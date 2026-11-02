@@ -116,6 +116,8 @@ AP.screens.party = (() => {
     return Array.from({ length: 28 }, (_, i) => {
       const style = [
         `left:${(Math.random() * 100).toFixed(1)}%`,
+        `--rest:${(5 + Math.random() * 90).toFixed(1)}%`, // where it stays, with gentler animations
+        `--tilt:${Math.round(Math.random() * 180)}deg`,
         `background:${colours[i % colours.length]}`,
         `animation-duration:${(3 + Math.random() * 3).toFixed(2)}s`,
         `animation-delay:${(-Math.random() * 6).toFixed(2)}s`,

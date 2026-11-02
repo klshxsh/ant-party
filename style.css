@@ -167,8 +167,8 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .trail-plate {
   position: absolute;
   top: 50%;
-  width: 28px;
-  height: 28px;
+  width: min(28px, 100% / var(--plates, 1) - 3px);
+  aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: var(--card);
@@ -180,7 +180,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
   line-height: 1;
 }
 .trail-plate.full { border: 2px solid var(--leaf); }
-.trail-plate svg { width: 22px; height: 22px; }
+.trail-plate svg { width: 80%; height: 80%; }
 .trail-leader {
   position: absolute;
   bottom: 4px;
@@ -340,7 +340,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .leaf {
   position: absolute;
   left: 4px;
-  bottom: 31px;
+  bottom: calc(var(--ant-w) * 0.43);
   padding: 0 7px;
   font-weight: 700;
   font-size: 0.8rem;
@@ -421,6 +421,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 /* Food choice */
 .food-coach { --ant-w: 110px; margin-bottom: 4px; }
 .food-choices {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -429,7 +430,8 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 }
 .food-card {
   font: inherit;
-  width: 150px;
+  flex: 1 1 96px; /* three in a row down to about 340px wide */
+  max-width: 150px;
   padding: 16px 8px;
   border: 0;
   border-radius: var(--radius);
@@ -445,10 +447,10 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .food-card:hover { transform: translateY(-4px); }
 .food-card:disabled { cursor: default; opacity: 0.5; }
 .food-card.chosen { opacity: 1; box-shadow: 0 6px 0 var(--leaf); }
-.food-icon { display: block; width: 88px; height: 88px; }
+.food-icon { display: block; width: min(88px, 100%); aspect-ratio: 1; }
 .food-icon svg { display: block; width: 100%; height: 100%; }
 .food-card.chosen .food-icon { animation: fly-away 0.9s ease-in forwards; }
-.food-name { font-size: 1.2rem; font-weight: 600; color: var(--ink); }
+.food-name { font-size: clamp(1rem, 4.4vw, 1.2rem); font-weight: 600; color: var(--ink); }
 @keyframes fly-away {
   30% { transform: scale(1.3); }
   to { transform: translateY(-70vh) scale(0.3) rotate(20deg); opacity: 0; }
@@ -466,12 +468,14 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 
 /* Party */
 #screen-party { align-items: center; text-align: center; padding-bottom: 8px; }
-.party-title { font-size: 2rem; margin-bottom: 8px; padding: 0 56px; }
+.party-title { font-size: clamp(1.3rem, 6.5vw, 2rem); margin-bottom: 8px; padding: 0 52px; }
 .party-scene {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  max-height: calc(100dvh - 190px);
+  /* Whatever height the title and buttons leave, but no taller than 2:3 */
+  flex: 1 1 0;
+  min-height: 240px;
+  max-height: 150vw;
   container-type: inline-size;
   overflow: hidden;
   border-radius: 24px;
@@ -808,3 +812,176 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 }
 .skill-example { color: var(--leaf-dark); white-space: nowrap; }
 .skill-rating { margin-left: auto; font-weight: 600; }
+
+/* Screen sizes. The base styles above are for phones held upright. */
+
+/* Narrow phones: the trail drops its little tent (there's one on the ground). */
+@media (max-width: 480px) {
+  .trail-tent { display: none; }
+  .trail-track { margin: 0 10px; }
+  .encourager-ant { --ant-w: 68px; }
+  .bubble { font-size: 1rem; padding: 8px 12px; }
+  .food-choices { gap: 12px; }
+  .party-actions { gap: 10px; }
+  .party-actions .btn { font-size: 1.05rem; padding: 12px 20px; }
+}
+
+/* Short screens (small phones, and phones on their side): everything a bit tighter. */
+@media (max-height: 640px) {
+  .screen { padding-top: 10px; padding-bottom: 10px; }
+  .quiz-body { gap: 14px; padding: 8px 0; }
+  .question-card { padding: 14px 16px 18px; }
+  .question { font-size: clamp(2rem, min(11vw, 8.5vh), 4rem); }
+  .answer { font-size: clamp(1.9rem, min(10vw, 8vh), 3.6rem); margin-top: 4px; }
+  .ground { height: 64px; margin-bottom: -10px; }
+  .walker { bottom: 10px; --ant-w: 60px; }
+  .tent { width: 72px; bottom: 14px; }
+  .home-card { padding: 24px 28px; }
+  .home-ant { --ant-w: 96px; }
+  .tagline { margin-bottom: 18px; }
+  .home-links { margin-top: 18px; }
+  .food-coach { --ant-w: 80px; }
+}
+
+/* Phones on their side: the question and the number pad sit side by side. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #app { max-width: 960px; }
+  .btn-icon { width: 44px; height: 44px; font-size: 1.4rem; }
+  .mute { top: 10px; }
+  .quiz-body { flex-direction: row; align-items: center; gap: 20px; }
+  .question-card { flex: 1; }
+  .keypad { width: 46%; max-width: 340px; margin: 0; gap: 8px; }
+  .keypad button { height: clamp(40px, 12.5vh, 60px); font-size: 1.5rem; }
+  .ground { height: 52px; }
+  .walker { bottom: 6px; --ant-w: 52px; }
+  .tent { width: 60px; bottom: 8px; }
+
+  .title span { display: inline; }
+  .home-card { padding: 16px 32px 24px; }
+  .home-ant { --ant-w: 76px; margin: -6px 0 0; }
+  .tagline { margin: 4px 0 14px; }
+
+  .food-coach { display: none; }
+  .food-card { max-width: 132px; padding: 12px 8px; }
+  .food-icon { width: 72px; }
+
+  /* Party: the scene on the left, the title and buttons down the right */
+  #screen-party:not([hidden]) {
+    display: grid;
+    grid-template: "scene title" auto "scene hint" auto "scene actions" 1fr / auto 1fr;
+    align-items: start;
+    column-gap: 16px;
+  }
+  .party-scene { grid-area: scene; height: calc(100dvh - 20px); width: auto; aspect-ratio: 5 / 4; }
+  .party-title { grid-area: title; font-size: 1.6rem; padding: 4px 52px 0 0; }
+  .party-hint { grid-area: hint; margin: 0 0 12px; }
+  .party-actions { grid-area: actions; flex-direction: column; align-items: stretch; }
+}
+
+/* Tablets: bigger keys, questions, ants and food, to use the room. */
+@media (min-width: 700px) and (min-height: 700px) {
+  .btn-icon { width: 56px; height: 56px; font-size: 1.8rem; }
+  .mute svg { width: 30px; height: 30px; }
+  .quiz-top, .screen-top { padding-right: 70px; }
+  .btn { font-size: 1.3rem; padding: 14px 32px; }
+  .btn-small { font-size: 1.1rem; padding: 8px 22px; }
+
+  .home-card { padding: 48px 64px; border-radius: 40px; }
+  .home-ant { --ant-w: 180px; }
+  .title { font-size: 4.6rem; }
+  .tagline { font-size: 1.5rem; margin-bottom: 36px; }
+  .btn-big { font-size: 2.3rem; padding: 20px 80px; }
+  .home-links .btn { font-size: 1.2rem; }
+
+  .trail-track { height: 16px; }
+  .trail-plate { width: min(38px, 100% / var(--plates, 1) - 4px); }
+  .trail-leader { --ant-w: 48px; bottom: 6px; }
+  .trail-tent { width: 54px; }
+  .trail-count { font-size: 1.25rem; }
+  .question-card { padding: 32px 24px; }
+  .question { font-size: min(5.5rem, 9vh); }
+  .answer { font-size: min(5rem, 8vh); min-width: 3ch; }
+  .keypad { max-width: 480px; gap: 14px; }
+  .keypad button { height: clamp(56px, 8.5vh, 92px); font-size: 2.4rem; border-radius: 20px; }
+  .encourager { bottom: -52px; }
+  .encourager-ant { --ant-w: 120px; }
+  .bubble { font-size: 1.4rem; padding: 12px 18px; margin-bottom: 40px; }
+  .ground { height: 100px; }
+  .walker { bottom: 16px; --ant-w: 92px; }
+  .leaf { font-size: 1rem; padding: 0 9px; }
+  .tent { width: 116px; bottom: 22px; }
+
+  .food-coach { --ant-w: 150px; }
+  #screen-food h2 { font-size: 2.2rem; }
+  .food-choices { gap: 24px; }
+  .food-card { flex-basis: 160px; max-width: 200px; padding: 22px 10px; }
+  .food-icon { width: 128px; }
+  .food-name { font-size: 1.5rem; }
+
+  .party-title { font-size: 2.6rem; }
+  .party-hint { font-size: 1.2rem; }
+
+  .screen-top h2 { font-size: 2rem; }
+  .album-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+  .album-card { padding: 16px 18px; }
+  .album-date { font-size: 1.15rem; }
+  .album-foods svg { width: 44px; height: 44px; }
+  .album-ants { --ant-w: 50px; }
+}
+
+/* Gentler animations: the calm class on <html> (see AP.updateMotion in main.js), set by
+   the grown-ups or by the device asking for reduced motion. Nothing loops except blinks,
+   one-off effects get smaller or fade instead, and the ants still walk to the party. */
+.calm .answer.right,
+.calm .answer.wrong { animation: none; }
+.calm .encourager.pop,
+.calm .party-bubble.pop { animation: fade-in 300ms ease-out; }
+.calm .leaf,
+.calm .ant .antenna,
+.calm .ant.walking .ant-body,
+.calm .ant.dance .leg,
+.calm .ant.eat .ant-body,
+.calm .food-wobble,
+.calm .party-food.eaten > svg { animation: none; }
+.calm .ant.dance .ant-body { animation: sway 2.4s ease-in-out infinite; animation-delay: var(--dance-delay, 0s); }
+.calm .ant.cheer .ant-body { animation: none; }
+.calm .ant.cheer .leg.front.near { animation-iteration-count: 2; }
+.calm .food-card.chosen .food-icon { animation: fade-out 0.9s ease-in forwards; }
+.calm .food-card:hover { transform: none; }
+.calm .confetti { animation: none; top: var(--rest); rotate: var(--tilt); }
+.calm .party-flag.swing { animation-name: flag-swing-calm; }
+.calm .party-sun.spin { animation-name: sun-glow; }
+.calm .party-tent svg.wobble { animation-name: wobble-calm; }
+.calm .party-scene .party-food svg.jiggle { animation: jiggle-calm 0.6s ease-out; }
+.calm .party-ant.hop { animation-name: hop-calm; }
+.calm .burst { animation-name: burst-calm; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+@keyframes sway {
+  50% { translate: 0 -1.5px; }
+}
+@keyframes flag-swing-calm {
+  40% { rotate: 6deg; }
+}
+@keyframes sun-glow {
+  50% { box-shadow: 0 0 0 3.5cqw rgba(255, 217, 90, 0.5); }
+}
+@keyframes wobble-calm {
+  40% { rotate: -1.5deg; }
+}
+@keyframes jiggle-calm {
+  50% { scale: 1.05; }
+}
+@keyframes hop-calm {
+  40% { translate: 0 -0.8cqw; }
+}
+@keyframes burst-calm {
+  from { opacity: 1; }
+  60% { opacity: 1; }
+  to { translate: calc(var(--dx) * 0.3) calc(var(--dy) * 0.3); opacity: 0; }
+}

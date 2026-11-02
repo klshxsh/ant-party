@@ -1,17 +1,6 @@
 // Sanity-checks the question generators and round logic outside the browser.
 // Usage: node tools/check-questions.js
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
-
-const root = path.join(__dirname, '..');
-const ctx = { window: {}, console, Math, JSON, Number, Array, Object, Set };
-ctx.window = ctx;
-vm.createContext(ctx);
-for (const file of ['util.js', 'config.js', 'storage.js', 'questions.js', 'ants.js', 'round.js']) {
-  vm.runInContext(fs.readFileSync(path.join(root, 'js', file), 'utf8'), ctx, { filename: file });
-}
-const { AP } = ctx;
+const AP = require('./load-game')();
 
 let failures = 0;
 function check(ok, message) {
@@ -86,6 +75,7 @@ check(AP.prefs.problems({ ...settings, addsubMax: NaN }).length === 1, 'blank bi
 check(AP.prefs.problems(settings).length === 0, 'defaults have no problems');
 check(AP.prefs.normalise({ antSpeed: 'scurry' }).antSpeed === 'scurry', 'ant speed kept');
 check(AP.prefs.normalise({ antSpeed: 'toString' }).antSpeed === 'stroll', 'unknown ant speed reset');
+check(AP.prefs.normalise({}).calm === false && AP.prefs.normalise({ calm: 1 }).calm === true, 'gentler animations setting');
 
 // Weak facts come up more often.
 const stats = { '7x8': { n: 5, err: 1, ms: 15000 } };

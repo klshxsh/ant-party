@@ -16,11 +16,16 @@ from `file://`, so:
 
 - `node tools/check-questions.js`: question generators, weak-fact weighting, round timing.
   Exits non-zero on failure.
-- `node tools/play-round.mjs <out-dir> [WxH]`: plays a full round (×, ÷ and +/− with negatives) in headless Chrome
+- `node tools/question-mix.js`: how questions spread over 10,000 picks (every fact about
+  equally often, sign patterns balanced, carry/borrow about 2 in 3 across ranges, weak
+  facts more often). Prints a report; exits non-zero if a spread is off.
+- `node tools/play-round.mjs <out-dir> [WxH] [--calm]`: plays a full round (×, ÷ and +/− with negatives) in headless Chrome
   and saves screenshots (home, question, wrong answer, walking ant, food, party arriving, party, party easter eggs and finale, album,
-  saved party, settings, progress, +/− skills) and logs which music is playing at each stage.
-  Exits non-zero on JS errors. Check both phone (`390x844`) and tablet (`820x1180`) sizes
-  after UI changes, and look at the screenshots.
+  saved party, settings, progress, +/− skills) and logs which music is playing at each stage,
+  any game screen that scrolls, and whether gentler animations are on (`--calm` emulates
+  the device asking for reduced motion). Exits non-zero on JS errors. Check both phone (`390x844`) and tablet (`820x1180`) sizes
+  after UI changes, and look at the screenshots; layout changes also want a small phone
+  (`320x568`), a phone on its side (`844x390`) and a tablet on its side (`1180x820`).
 
 ## Code layout and conventions
 
@@ -52,6 +57,13 @@ from `file://`, so:
   which never throws.
 - Colours are CSS variables in `:root` in `style.css`. The theme is green; ants and food
   use warm contrasting colours.
+- Base styles are for an upright phone; the "Screen sizes" media queries near the end of
+  `style.css` adjust for narrow phones, short screens, phones on their side (question and
+  keypad side by side) and tablets.
+- Gentler animations: `AP.updateMotion()` puts a `calm` class on `<html>` when the setting
+  is on or the device prefers reduced motion (`AP.calm()` says which). The `.calm` rules at
+  the end of `style.css` stop looping motion and soften one-off effects. A one-off effect
+  that's removed on `animationend` must keep *some* animation under `.calm`, or it never ends.
 - UK English in the UI ("colour", "ice lolly", "maths").
 
 ## Git

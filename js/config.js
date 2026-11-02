@@ -15,6 +15,7 @@ AP.config = {
     music: true,
     volume: 70,     // music volume, 0–100
     muted: false,   // the mute button on every screen
+    calm: false,    // gentler animations (always on when the device asks for reduced motion)
   },
 
   limits: {

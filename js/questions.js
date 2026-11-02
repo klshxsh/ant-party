@@ -87,18 +87,23 @@ AP.questions = (() => {
 
   // Makes up numbers for a +/− bucket. Two times in three it looks for carrying or
   // borrowing (the useful practice). It avoids round numbers like 30 and numbers under
-  // a tenth of the range, like 2 when it goes to 100 (too easy).
+  // a tenth of the range, like 2 when it goes to 100 (too easy). Some ranges can't
+  // manage both (from −1000 to 1, the only positive number is 1), so it keeps the best
+  // try, and carrying or borrowing counts for more than avoiding easy numbers.
   function addSubNumbers(fact, settings) {
     const r = bounds(fact, settings);
     const small = Math.max(-settings.addsubMin, settings.addsubMax) / 10;
     const wantRegroup = Math.random() < 2 / 3;
-    let a, d;
-    for (let attempt = 0; attempt < 30; attempt++) {
-      a = rand(r.from, r.to);
-      d = rand(Math.max(r.dLo, r.lo - a), Math.min(r.dHi, r.hi - a));
+    let best = null;
+    let bestScore = -1;
+    for (let attempt = 0; attempt < 30 && bestScore < 3; attempt++) {
+      const a = rand(r.from, r.to);
+      const d = rand(Math.max(r.dLo, r.lo - a), Math.min(r.dHi, r.hi - a));
       const tooEasy = [a, d].some(n => Math.abs(n) < small || (Math.abs(n) >= 10 && n % 10 === 0));
-      if (regroups(a, d) === wantRegroup && !tooEasy) break;
+      const score = 2 * (regroups(a, d) === wantRegroup) + !tooEasy;
+      if (score > bestScore) [best, bestScore] = [[a, d], score];
     }
+    const [a, d] = best;
     return [a, fact.op === '+' ? d : -d];
   }
 

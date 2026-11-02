@@ -97,7 +97,8 @@ Home also links to: Album · Settings
   (dawdle / stroll / scurry, default stroll) and each ant varies around it, so quick
   answers send several ants across together and a fast one can overtake.
 - Encourager ant: pops up beside the question, fist-pump and bounce, speech bubble with
-  a rotating line ("You can do it!", "Nearly!", "Have another go!").
+  a rotating line ("You can do it!", "Nearly!", "Have another go!"). It ducks away as
+  soon as the child starts typing the next try, so it never hides the answer.
 - A progress trail at the top of the quiz screen shows ants heading to an anthill tent,
   with food markers at every N.
 
@@ -126,6 +127,7 @@ Home also links to: Album · Settings
 - Max tries: unlimited / 1 / 2 / 3.
 - Ant walking speed: dawdle / stroll / scurry.
 - Sound effects on/off, music on/off and music volume.
+- Gentler animations (also on whenever the device asks for reduced motion).
 - **Progress view**: a 12×12 table heat map of accuracy and speed, and the +/− sign
   patterns the current range allows, each with an example.
 - Reset progress, clear album.
@@ -167,8 +169,13 @@ Home also links to: Album · Settings
    winking sun, tent balloons, jiggling food, with sparkle and boing sounds); ants walk
    at a pace set in settings (default about half the old speed), each with its own
    random variation, legs keeping step.
-6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
-   check the question distributions with a quick script over 10,000 picks.
+6. ✅ **Polish**: layouts for small phones, phones on their side (question and keypad side
+   by side, party buttons beside the scene) and tablets (bigger keys, questions, ants and
+   food); food choices three in a row on phones; trail plates shrink to fit. Gentler
+   animations setting, also on when the device asks for reduced motion: nothing loops but
+   blinks, confetti rests in place, effects soften or fade. `tools/question-mix.js` checks
+   the spread over 10,000 picks; it found +/− losing carry/borrow in lopsided ranges
+   (−1000 to 1 gave 33%, now 65%), fixed by keeping the best try.
 
 ## Settled details
 

@@ -1,8 +1,10 @@
 // Plays a full round in headless Chrome and saves screenshots of key moments.
 //
-// Usage: node tools/play-round.mjs <output-dir> [WIDTHxHEIGHT]
+// Usage: node tools/play-round.mjs <output-dir> [WIDTHxHEIGHT] [--calm]
 //   e.g. node tools/play-round.mjs /tmp/shots 390x844   (phone)
 //        node tools/play-round.mjs /tmp/shots 820x1180  (tablet, default)
+//        node tools/play-round.mjs /tmp/shots 844x390 --calm  (phone on its side, with
+//        the device asking for reduced motion, so the gentler animations are on)
 // Set CHROME=/path/to/chrome if Chrome isn't in the usual macOS location.
 //
 // Talks to Chrome over the DevTools protocol using Node's built-in WebSocket,
@@ -13,8 +15,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const OUT = resolve(process.argv[2] || 'shots');
-const [W, H] = (process.argv[3] || '820x1180').split('x').map(Number);
+const args = process.argv.slice(2);
+const CALM = args.includes('--calm');
+const [outArg, sizeArg] = args.filter(a => a !== '--calm');
+const OUT = resolve(outArg || 'shots');
+const [W, H] = (sizeArg || '820x1180').split('x').map(Number);
 const PAGE = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), '..', 'index.html')).href;
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const PORT = 9333;
@@ -73,6 +78,11 @@ const shot = async name => {
 };
 const click = sel => js(`document.querySelector(${JSON.stringify(sel)}).click()`);
 const visible = screen => js(`!document.getElementById('screen-${screen}').hidden`);
+// Game screens should fit the window without scrolling.
+const fits = async where => {
+  const [tall, win] = await js(`[document.documentElement.scrollHeight, innerHeight]`);
+  if (tall > win) console.log(`Scrolls: ${where} is ${tall}px tall in a ${win}px window`);
+};
 const music = async where => console.log(`Music ${where}:`, (await js(`AP.audio.playing().join(', ')`)) || '(none)');
 
 // --- Game helpers ---
@@ -103,16 +113,19 @@ const playUntil = async screen => {
 await send('Runtime.enable');
 await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: W < 600 });
+if (CALM) await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
 await send('Page.navigate', { url: PAGE });
 await sleep(1500);
 await js(`window.confirm = () => true; localStorage.clear()`);
 // All three kinds of question, with the default −20 to 20 range for + and −.
 await js(`AP.state.settings.types = { mul: true, div: true, addsub: true }`);
 await shot('1-home');
+await fits('home');
 
 await click('#home-start');
 await sleep(400);
 await shot('2-question');
+await fits('quiz');
 await sleep(800); // the crossfade
 await music('during questions');
 
@@ -128,6 +141,7 @@ console.log('Walk:', await js(`[...document.querySelectorAll('.walker')].map(w =
 
 await playUntil('food');
 await shot('5-food');
+await fits('food');
 await sleep(300);
 await music('choosing food');
 await click('#food-choices button');
@@ -140,6 +154,7 @@ await sleep(3500); // every ant has walked in
 await click('.party-ant');
 await sleep(400);
 await shot('7-party');
+await fits('party');
 await music('at the party');
 
 // Easter eggs: the sun, the tent, a food, then every bunting flag for the finale.
@@ -153,6 +168,11 @@ await sleep(500);
 await shot('7-party-finale');
 console.log('Finale:', await js(`document.getElementById('party-bubble').textContent`),
   '/', await js(`document.querySelectorAll('.burst').length`), 'confetti pieces');
+const animation = sel => js(`getComputedStyle(document.querySelector(${JSON.stringify(sel)})).animationName`);
+console.log('Gentler animations:', await js(`document.documentElement.classList.contains('calm')`),
+  '/ dancer:', await animation('.ant.dance .ant-body'), '/ confetti:', await animation('.confetti'));
+await sleep(4500); // the longest is a balloon: 3.6s, after a delay of up to 0.75s
+console.log('Easter-egg pieces left after 4.5s:', await js(`document.querySelectorAll('.burst, .balloon').length`));
 await click('#mute');
 console.log('Muted:', await js(`AP.state.settings.muted`), '/ music:', (await js(`AP.audio.playing().join(', ')`)) || '(none)');
 await click('#mute');
