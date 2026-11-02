@@ -77,12 +77,14 @@ const music = async where => console.log(`Music ${where}:`, (await js(`AP.audio.
 
 // --- Game helpers ---
 const typeAnswer = async n => {
-  for (const d of String(n)) await click(`#quiz-keypad [data-key="${d}"]`);
+  for (const d of String(n)) await click(`#quiz-keypad [data-key="${d === '-' ? 'minus' : d}"]`);
   await click('#quiz-keypad [data-key="ok"]');
 };
 const currentAnswer = () => js(`(() => {
-  const [a, op, b] = document.getElementById('quiz-question').textContent.replace(' =', '').split(' ');
-  return ({ '×': a * b, '÷': a / b, '+': +a + +b, '−': a - b })[op];
+  const num = s => Number(s.replace(/[()]/g, '').replace('−', '-'));
+  const [x, op, y] = document.getElementById('quiz-question').textContent.replace(' =', '').split(' ');
+  const [a, b] = [num(x), num(y)];
+  return ({ '×': a * b, '÷': a / b, '+': a + b, '−': a - b })[op];
 })()`);
 // Answers questions (and picks the first food) until the given screen shows.
 const playUntil = async screen => {
@@ -104,6 +106,8 @@ await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceSc
 await send('Page.navigate', { url: PAGE });
 await sleep(1500);
 await js(`window.confirm = () => true; localStorage.clear()`);
+// All three kinds of question, with the default −20 to 20 range for + and −.
+await js(`AP.state.settings.types = { mul: true, div: true, addsub: true }`);
 await shot('1-home');
 
 await click('#home-start');
@@ -170,6 +174,9 @@ await click('.hm-cell.strong, .hm-cell.getting, .hm-cell.tricky');
 await sleep(200);
 await shot('11-progress');
 console.log('Progress detail:', await js(`document.getElementById('progress-detail').textContent`));
+await js(`document.getElementById('progress-skills').scrollIntoView({ block: 'center' })`);
+await shot('11-progress-skills');
+console.log('+/− skills:', await js(`[...document.querySelectorAll('#progress-skills li')].map(li => li.textContent).join(' / ')`));
 
 console.log(`Screenshots in ${OUT}`);
 console.log(errors.length ? `JS ERRORS:\n${errors.join('\n')}` : 'No JS errors');

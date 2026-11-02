@@ -293,6 +293,14 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .keypad button:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--leaf-light); }
 .keypad .key-ok { background: var(--leaf); color: #fff; box-shadow: var(--press) var(--leaf-dark); }
 .keypad .key-back { color: var(--forest); }
+.keypad .key-minus[hidden] { display: none; }
+/* With negatives the minus key joins a fourth column, calculator style:
+   1 2 3 ⌫ / 4 5 6 − / 7 8 9 ✓ / 0 0 0 ✓ */
+.keypad.signed { grid-template-columns: repeat(4, 1fr); }
+.keypad.signed .key-back { grid-area: 1 / 4; }
+.keypad.signed .key-minus { grid-area: 2 / 4; }
+.keypad.signed .key-ok { grid-area: 3 / 4 / span 2; height: auto; }
+.keypad.signed [data-key="0"] { grid-area: 4 / 1 / auto / span 3; }
 
 /* Ground strip where ants walk into the party tent. Full-bleed on wide screens. */
 .ground {
@@ -596,6 +604,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .settings input[type="range"] { flex: 1; min-width: 160px; max-width: 320px; accent-color: var(--leaf); }
 .check { display: flex; align-items: center; gap: 10px; }
 .check input { width: 22px; height: 22px; accent-color: var(--leaf); }
+.check-gap { margin-top: 12px; }
 .hint { margin: 6px 0 0; font-size: 0.95rem; }
 .tables { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip input { position: absolute; opacity: 0; pointer-events: none; }
@@ -702,13 +711,17 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 .progress-detail { min-height: 2.6em; font-weight: 600; margin: 10px 0 4px; }
 .progress-counts { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 #screen-progress h3 { margin: 20px 0 8px; color: var(--forest); }
+#progress-range { margin: 0 0 8px; }
 .skills { list-style: none; margin: 0; padding: 0; max-width: 520px; }
 .skills li {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0 8px;
   padding: 8px 12px;
   margin-bottom: 6px;
   background: var(--card);
   border-radius: 12px;
 }
+.skill-example { color: var(--leaf-dark); white-space: nowrap; }
 .skill-rating { margin-left: auto; font-weight: 600; }

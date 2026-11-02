@@ -11,6 +11,7 @@ AP.screens.quiz = (() => {
   let shownAt = 0;
   let firstMs = 0;
   let locked = false;
+  let signed = false; // answers can be negative, so there's a minus key
 
   function init() {
     $('quiz-tent').innerHTML = AP.scenery.tent();
@@ -23,6 +24,7 @@ AP.screens.quiz = (() => {
       if ($('screen-quiz').hidden) return;
       let key = null;
       if (/^[0-9]$/.test(e.key)) key = e.key;
+      else if ((e.key === '-' || e.key === '−') && signed) key = 'minus';
       else if (e.key === 'Backspace') key = 'back';
       else if (e.key === 'Enter') key = $('quiz-reveal-ok').hidden ? 'ok' : 'reveal-ok';
       if (!key) return;
@@ -45,6 +47,9 @@ AP.screens.quiz = (() => {
       AP.state.round = AP.round.create(AP.state.settings);
       $('quiz-walkers').innerHTML = '';
     }
+    signed = AP.questions.negatives(AP.state.round.settings);
+    $('quiz-keypad').classList.toggle('signed', signed);
+    $('quiz-keypad').querySelector('[data-key="minus"]').hidden = !signed;
     buildTrail();
     next();
   }
@@ -64,13 +69,17 @@ AP.screens.quiz = (() => {
   function press(key) {
     if (locked) return;
     if (key === 'ok') return submit();
+    // input is what's typed, e.g. "-12". The minus key flips the sign at any point.
+    const sign = input.startsWith('-') ? '-' : '';
+    const digits = input.slice(sign.length);
     if (key === 'back') input = input.slice(0, -1);
-    else if (input.length < MAX_DIGITS) input = (input === '0' ? '' : input) + key;
+    else if (key === 'minus') input = (sign ? '' : '-') + digits;
+    else if (digits.length < MAX_DIGITS) input = sign + (digits === '0' ? '' : digits) + key;
     renderAnswer();
   }
 
   function submit() {
-    if (!input) return;
+    if (!/[0-9]/.test(input)) return;
     if (tries === 0) firstMs = performance.now() - shownAt;
     if (Number(input) === q.answer) correct();
     else wrong();
@@ -92,7 +101,7 @@ AP.screens.quiz = (() => {
     AP.audio.sfx('wrong');
     const max = AP.state.round.settings.maxTries;
     if (max && tries >= max) {
-      showEncourager(`It's ${q.text} = ${q.answer}. We'll try that one again soon!`, true);
+      showEncourager(`It's ${q.text} = ${AP.util.formatNumber(q.answer)}. We'll try that one again soon!`, true);
       return;
     }
     showEncourager(AP.util.pick(AP.config.encouragements));
@@ -129,7 +138,7 @@ AP.screens.quiz = (() => {
 
   function renderAnswer(state) {
     const box = $('quiz-answer');
-    box.textContent = input || '?';
+    box.textContent = input.replace('-', '−') || '?';
     box.classList.toggle('empty', !input);
     box.classList.remove('right', 'wrong');
     if (state) {
@@ -161,7 +170,7 @@ AP.screens.quiz = (() => {
     const el = document.createElement('div');
     el.className = 'walker';
     el.style.animationDuration = `${Math.max(2500, $('quiz-walkers').offsetWidth / WALK_SPEED)}ms`;
-    el.innerHTML = `${AP.ants.render(ant, ['walking'])}<span class="leaf">${q.answer}</span>`;
+    el.innerHTML = `${AP.ants.render(ant, ['walking'])}<span class="leaf">${AP.util.formatNumber(q.answer)}</span>`;
     el.addEventListener('animationend', e => e.target === el && el.remove());
     $('quiz-walkers').appendChild(el);
     AP.audio.sfx('steps');

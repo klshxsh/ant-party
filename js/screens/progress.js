@@ -5,16 +5,18 @@ AP.screens = AP.screens || {};
 AP.screens.progress = (() => {
   const $ = id => document.getElementById(id);
   const LABELS = { strong: 'Strong', getting: 'Getting there', tricky: 'Tricky', new: 'Not tried yet' };
-  const SKILLS = [
-    ['add100-plain', 'Adding to 100'],
-    ['add100-carry', 'Adding to 100, with carrying'],
-    ['sub100-plain', 'Subtracting to 100'],
-    ['sub100-borrow', 'Subtracting to 100, with borrowing'],
-    ['add1000-plain', 'Adding to 1000'],
-    ['add1000-carry', 'Adding to 1000, with carrying'],
-    ['sub1000-plain', 'Subtracting to 1000'],
-    ['sub1000-borrow', 'Subtracting to 1000, with borrowing'],
-  ];
+  // The +/− sign patterns from AP.questions, each with an example.
+  const SKILLS = {
+    'add-pp': ['Adding', '8 + 5'],
+    'sub-pp': ['Subtracting', '13 − 5'],
+    'sub-below0': ['Subtracting past zero', '5 − 13'],
+    'add-pn': ['Adding a negative', '8 + (−5)'],
+    'add-np': ['Adding to a negative', '−8 + 5'],
+    'add-nn': ['Adding two negatives', '−8 + (−5)'],
+    'sub-pn': ['Taking away a negative', '8 − (−5)'],
+    'sub-np': ['Taking away from a negative', '−8 − 5'],
+    'sub-nn': ['A negative take away a negative', '−8 − (−5)'],
+  };
   let mode = 'mul';
 
   function init() {
@@ -69,9 +71,16 @@ AP.screens.progress = (() => {
       .map(r => `<span><span class="swatch ${r}"></span>${LABELS[r]}: <strong>${counts[r]}</strong></span>`)
       .join('');
 
-    $('progress-skills').innerHTML = SKILLS.map(([key, label]) => {
-      const rating = AP.questions.rating(key.includes('1000') ? 'addsub1000' : 'addsub100', stats[key]);
-      return `<li><span class="swatch ${rating}"></span>${label}<span class="skill-rating">${LABELS[rating]}</span></li>`;
+    // Only the patterns the current range can ask.
+    const { addsubMin, addsubMax } = settings;
+    const { formatNumber } = AP.util;
+    $('progress-range').textContent = settings.types.addsub
+      ? `Numbers from ${formatNumber(addsubMin)} to ${formatNumber(addsubMax)}.`
+      : 'Adding and subtracting is switched off in settings.';
+    $('progress-skills').innerHTML = AP.questions.factsFor('addsub', settings).map(({ key }) => {
+      const [label, example] = SKILLS[key];
+      const rating = AP.questions.rating('addsub', stats[key]);
+      return `<li><span class="swatch ${rating}"></span>${label}<span class="skill-example">${example}</span><span class="skill-rating">${LABELS[rating]}</span></li>`;
     }).join('');
   }
 

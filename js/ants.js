@@ -21,7 +21,7 @@ AP.ants = (() => {
       accessory: pick(antAccessories),
       trim: pick(antTrims),
       size: 0.9 + Math.random() * 0.2,
-      fact: `${q.text} = ${q.answer}`,
+      fact: `${q.text} = ${AP.util.formatNumber(q.answer)}`,
       firstTry,
     };
   }

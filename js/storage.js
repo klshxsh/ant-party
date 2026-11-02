@@ -45,10 +45,17 @@ AP.prefs = (() => {
   // Returns a complete, safe settings object whatever is stored.
   function normalise(raw) {
     const s = { ...defaults, ...(raw || {}) };
-    s.types = { ...defaults.types, ...(raw && raw.types) };
+    const types = (raw && raw.types) || {};
+    s.types = Object.fromEntries(
+      Object.keys(defaults.types).map(t => [t, t in types ? !!types[t] : defaults.types[t]]),
+    );
+    // Before phase 5.5, + and − came as two types: to 100 and to 1000.
+    if (!('addsub' in types) && (types.addsub100 || types.addsub1000)) s.types.addsub = true;
     s.foodEvery = int(s.foodEvery, defaults.foodEvery, limits.foodEvery);
     s.partyAt = int(s.partyAt, defaults.partyAt, limits.partyAt);
     s.maxTries = int(s.maxTries, defaults.maxTries, [0, 3]);
+    s.addsubMin = int(s.addsubMin, defaults.addsubMin, limits.addsubMin);
+    s.addsubMax = int(s.addsubMax, defaults.addsubMax, limits.addsubMax);
     s.tables = Array.isArray(s.tables)
       ? [...new Set(s.tables.map(Number).filter(n => n >= 1 && n <= 12))].sort((a, b) => a - b)
       : defaults.tables.slice();
@@ -70,6 +77,17 @@ AP.prefs = (() => {
     if (!Object.values(s.types).some(Boolean)) out.push('Pick at least one kind of question.');
     if ((s.types.mul || s.types.div) && !s.tables.length) out.push('Pick at least one times table.');
     if (s.foodEvery > s.partyAt) out.push('The food choice has to come before (or at) the party.');
+    if (s.types.addsub) {
+      const [minLo, minHi] = limits.addsubMin;
+      const [maxLo, maxHi] = limits.addsubMax;
+      const { formatNumber } = AP.util;
+      if (!(s.addsubMin >= minLo && s.addsubMin <= minHi)) {
+        out.push(`For + and −, the smallest number has to be between ${formatNumber(minLo)} and ${minHi}.`);
+      }
+      if (!(s.addsubMax >= maxLo && s.addsubMax <= maxHi)) {
+        out.push(`For + and −, the biggest number has to be between ${maxLo} and ${maxHi}.`);
+      }
+    }
     return out;
   }
 

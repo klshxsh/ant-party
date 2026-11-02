@@ -14,7 +14,7 @@ questions the party starts, with every ant from the round and all the chosen foo
 | Delivery | Static files, no build step: open `index.html` in a browser |
 | N / M | Parent sets them (defaults: food every 5, party at 20) |
 | Mistakes | An encourager ant pops up ("You can do it!") with an animation, then the child retries. Parent sets max tries: unlimited (default), 1, 2 or 3. When the tries run out, the ant shows the answer and the fact comes back later in the round |
-| Question types | ×  to 12×12, ÷ from the tables, +/− to 100, +/− to 1000. Each can be switched on or off; the parent can pick which tables. Default: × and ÷ only |
+| Question types | ×  to 12×12, ÷ from the tables, and +/− within a range the parent sets (default −20 to 20, so negatives like −4 − (−7) come in; a minimum of 1 keeps everything positive). Each can be switched on or off; the parent can pick which tables. Default: × and ÷ only |
 | Memory | Weak-fact tracking (wrong and slow answers come up more often) **and** a party album |
 | Food | Choose 1 of 3, drawn at random from a menu of about 15 foods |
 | Party | Ants eat and dance; tap an ant to see its question; save the party to the album |
@@ -72,11 +72,17 @@ Home also links to: Album · Settings
 ### Questions (`questions.js`)
 - **×**: `a × b` with `a` from the selected tables and `b` from 1–12 (option to skip ×1 and ×10 as too easy).
 - **÷**: the reverse of a table fact, `(a·b) ÷ a = b`, so answers are always whole numbers.
-- **+/− to 100 / 1000**: answers within the range, never negative, with a bias towards
-  carrying and borrowing (the useful practice), and trivial ones like `+0` avoided.
+- **+/−**: both numbers and the answer lie within the parent's range (min −1000 to 1,
+  max 5 to 1000), and neither number is 0. A negative second number is written in
+  brackets with a proper minus sign: `8 − (−5)`, `−8 + (−5)`. Two in three questions
+  aim for carrying or borrowing (worked on the sizes, so `−27 + 15` borrows), and round
+  numbers and numbers under a tenth of the range are avoided as too easy.
 - **Weak-fact weighting**: each fact key (`7x8`, `56/7`) stores attempts, misses and median
-  time. For +/− there are too many facts, so stats are kept per skill bucket instead
-  (e.g. `add100-carry`, `sub1000-borrow`). Pick weight = base + misses + slowness, with
+  time. For +/− there are too many facts, so stats are kept per sign pattern instead:
+  `add-pp` 8 + 5, `sub-pp` 13 − 5, `sub-below0` 5 − 13, `add-pn` 8 + (−5), `add-np` −8 + 5,
+  `add-nn` −8 + (−5), `sub-pn` 8 − (−5), `sub-np` −8 − 5, `sub-nn` −8 − (−5). Only the
+  patterns that fit in the range are asked (a range from 1 has just `add-pp` and `sub-pp`).
+  Pick weight = base + misses + slowness, with
   a short no-repeat window. A missed fact is put back 3–5 questions later in the same round.
 
 ### Ants (`ants.js`)
@@ -111,11 +117,11 @@ Home also links to: Album · Settings
 
 ### Settings (parent area)
 - N (food every…), M (party at…), checked so that N ≤ M.
-- Question types on/off, table picker (2–12), ranges.
+- Question types on/off, table picker (2–12), the +/− range (smallest and biggest number).
 - Max tries: unlimited / 1 / 2 / 3.
 - Sound effects on/off, music on/off and music volume.
-- **Progress view**: a 12×12 table heat map of accuracy and speed, and a list of the
-  weakest +/− skills.
+- **Progress view**: a 12×12 table heat map of accuracy and speed, and the +/− sign
+  patterns the current range allows, each with an example.
 - Reset progress, clear album.
 
 ### Audio (`audio.js`)
@@ -146,6 +152,11 @@ Home also links to: Album · Settings
    and grown-ups' screens, quieter quiz loop, one-shot food jingle, party loop); mute button
    on every screen (remembered); music volume in settings. Placeholder chiptune WAVs come
    from `tools/make-placeholder-audio.py`.
+5.5. ✅ **Adjustments**: +/− to 100 and to 1000 replaced by one +/− type with a min/max
+   range in settings (default −20 to 20), including negative numbers; stats per sign
+   pattern; a minus key on the number pad (4-column calculator layout) whenever answers
+   can be negative, and the − key on a keyboard; progress lists the sign patterns. Old
+   saved settings with either +/− type switched on turn into the new type.
 6. **Polish**: tablet layout and phone width, reduced-motion support (gentler animations),
    check the question distributions with a quick script over 10,000 picks.
 

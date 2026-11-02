@@ -2,7 +2,7 @@ AP.screens = AP.screens || {};
 
 AP.screens.settings = (() => {
   const $ = id => document.getElementById(id);
-  const TYPES = ['mul', 'div', 'addsub100', 'addsub1000'];
+  const TYPES = ['mul', 'div', 'addsub'];
 
   function init() {
     $('set-tables').innerHTML = Array.from({ length: 12 }, (_, i) => i + 1)
@@ -42,6 +42,8 @@ AP.screens.settings = (() => {
       box.checked = s.tables.includes(Number(box.value));
     });
     $('set-skip-easy').checked = s.skipEasy;
+    $('set-addsub-min').value = s.addsubMin;
+    $('set-addsub-max').value = s.addsubMax;
     $('set-sfx').checked = s.sfx;
     $('set-music').checked = s.music;
     $('set-volume').value = s.volume;
@@ -51,6 +53,8 @@ AP.screens.settings = (() => {
   function read() {
     const { limits } = AP.config;
     const num = (id, [lo, hi]) => AP.util.clamp(Math.round(Number($(id).value)) || lo, lo, hi);
+    // Not clamped, so a range typed out of bounds (or left blank) is reported rather than changed.
+    const exact = id => ($(id).value.trim() === '' ? NaN : Math.round(Number($(id).value)));
     return {
       foodEvery: num('set-food-every', limits.foodEvery),
       partyAt: num('set-party-at', limits.partyAt),
@@ -58,6 +62,8 @@ AP.screens.settings = (() => {
       types: Object.fromEntries(TYPES.map(t => [t, $(`set-type-${t}`).checked])),
       tables: [...$('set-tables').querySelectorAll('input:checked')].map(box => Number(box.value)),
       skipEasy: $('set-skip-easy').checked,
+      addsubMin: exact('set-addsub-min'),
+      addsubMax: exact('set-addsub-max'),
       sfx: $('set-sfx').checked,
       music: $('set-music').checked,
       volume: Number($('set-volume').value),

@@ -8,7 +8,7 @@ const root = path.join(__dirname, '..');
 const ctx = { window: {}, console, Math, JSON, Number, Array, Object, Set };
 ctx.window = ctx;
 vm.createContext(ctx);
-for (const file of ['util.js', 'config.js', 'questions.js', 'ants.js', 'round.js']) {
+for (const file of ['util.js', 'config.js', 'storage.js', 'questions.js', 'ants.js', 'round.js']) {
   vm.runInContext(fs.readFileSync(path.join(root, 'js', file), 'utf8'), ctx, { filename: file });
 }
 const { AP } = ctx;
@@ -21,32 +21,73 @@ function check(ok, message) {
   }
 }
 
-// Every question's text must evaluate to its answer, within the type's range.
+// Reads "−8 − (−5)" back into [a, op, b] as numbers.
+const num = s => Number(s.replace(/[()]/g, '').replace('−', '-'));
+function parse(text) {
+  const [a, op, b] = text.split(' ');
+  return [num(a), op, num(b), b.startsWith('(')];
+}
+
+// Every question's text must evaluate to its answer.
 const settings = JSON.parse(JSON.stringify(AP.config.defaults));
-settings.types = { mul: true, div: true, addsub100: true, addsub1000: true };
+settings.types = { mul: true, div: true, addsub: true };
 const counts = {};
 for (let i = 0; i < 10000; i++) {
   const q = AP.questions.pickNext(settings, {}, []);
-  const label = q.type === 'mul' || q.type === 'div' ? q.type : q.key;
-  counts[label] = (counts[label] || 0) + 1;
-  const [a, op, b] = q.text.split(' ');
-  const x = Number(a);
-  const y = Number(b);
+  counts[q.type] = (counts[q.type] || 0) + 1;
+  const [x, op, y] = parse(q.text);
   const expected = { '×': x * y, '÷': x / y, '+': x + y, '−': x - y }[op];
   check(expected === q.answer, `${q.text} gave ${q.answer}`);
-  check(Number.isInteger(q.answer) && q.answer >= 0, `${q.text}: answer ${q.answer} not a whole number ≥ 0`);
-  if (q.type === 'addsub100') check(x <= 100 && y <= 100 && q.answer <= 100, `${q.text} out of range`);
-  if (q.type === 'addsub1000') check(x <= 1000 && y <= 1000 && q.answer <= 1000, `${q.text} out of range`);
-  if (op === '−') check(q.answer >= (q.type === 'addsub1000' ? 30 : 6), `${q.text} is too trivial`);
-  if (/carry$/.test(q.key)) check(AP.questions.hasCarry(x, y), `${q.text} should carry`);
-  if (/borrow$/.test(q.key)) check(AP.questions.hasBorrow(x, y), `${q.text} should borrow`);
-  if (/plain$/.test(q.key)) check(op === '+' ? !AP.questions.hasCarry(x, y) : !AP.questions.hasBorrow(x, y), `${q.text} should not regroup`);
+  check(Number.isInteger(q.answer), `${q.text}: answer ${q.answer} not a whole number`);
+  if (q.type !== 'addsub') check(q.answer >= 0, `${q.text}: answer below zero`);
 }
 console.log('Mix over 10,000 questions:', counts);
 
+// + and −, over a range of settings: everything in range, signs match the bucket,
+// and every bucket the range allows turns up.
+const sign = n => (n > 0 ? 'p' : 'n');
+const ranges = [[-20, 20], [1, 100], [1, 1000], [-100, 100], [-1000, 1], [-1, 5], [1, 5], [0, 10], [-3, 1000]];
+for (const [min, max] of ranges) {
+  const s = { ...settings, types: { mul: false, div: false, addsub: true }, addsubMin: min, addsubMax: max };
+  const facts = AP.questions.factsFor('addsub', s);
+  const seen = {};
+  let regrouped = 0;
+  for (let i = 0; i < 5000; i++) {
+    const q = AP.questions.pickNext(s, {}, []);
+    const [x, op, y, bracketed] = parse(q.text);
+    const fact = facts.find(f => f.key === q.key);
+    seen[q.key] = (seen[q.key] || 0) + 1;
+    if (AP.questions.regroups(x, op === '+' ? y : -y)) regrouped++;
+    const where = `${q.text} (${min} to ${max})`;
+    check(fact, `${where}: unexpected bucket ${q.key}`);
+    check([x, y, q.answer].every(n => n >= min && n <= max), `${where}: out of range`);
+    check(x !== 0 && y !== 0, `${where}: has a 0`);
+    check(bracketed === y < 0, `${where}: brackets`);
+    check(op === (q.key.startsWith('add') ? '+' : '−'), `${where}: wrong sign for ${q.key}`);
+    if (fact) {
+      check(sign(x) === fact.a && sign(y) === fact.b, `${where}: signs don't match ${q.key}`);
+      if (fact.ans) check(q.answer !== 0 && sign(q.answer) === fact.ans, `${where}: answer sign for ${q.key}`);
+    }
+  }
+  check(facts.length > 0, `${min} to ${max}: no buckets`);
+  check(facts.every(f => seen[f.key]), `${min} to ${max}: some buckets never asked`);
+  if (min >= 0) check(facts.every(f => f.a === 'p' && f.b === 'p' && f.ans !== 'n'), `${min} to ${max}: has negatives`);
+  check(AP.questions.negatives(s) === min < 0, `${min} to ${max}: negatives()`);
+  console.log(`${min} to ${max}: ${facts.length} buckets, ${Math.round(regrouped / 50)}% carry/borrow`);
+}
+check(AP.questions.factsFor('addsub', { addsubMin: -20, addsubMax: 20 }).length === 9, '−20 to 20 should allow all 9 buckets');
+
+// Stored settings are made safe; the old "to 100" / "to 1000" types turn into + and −.
+const old = AP.prefs.normalise({ types: { mul: false, div: false, addsub100: true }, addsubMin: 50, addsubMax: 'x' });
+check(JSON.stringify(old.types) === '{"mul":false,"div":false,"addsub":true}', `old types: ${JSON.stringify(old.types)}`);
+check(old.addsubMin === 1 && old.addsubMax === 20, `range clamped: ${old.addsubMin} to ${old.addsubMax}`);
+check(AP.prefs.problems({ ...settings, addsubMin: 5 }).length === 1, 'smallest number above 1 is a problem');
+check(AP.prefs.problems({ ...settings, addsubMax: NaN }).length === 1, 'blank biggest number is a problem');
+check(AP.prefs.problems(settings).length === 0, 'defaults have no problems');
+
 // Weak facts come up more often.
 const stats = { '7x8': { n: 5, err: 1, ms: 15000 } };
-const only = { ...settings, types: { mul: true, div: false, addsub100: false, addsub1000: false } };
+const only = { ...settings, types: { mul: true, div: false, addsub: false } };
 let hits = 0;
 for (let i = 0; i < 10000; i++) if (AP.questions.pickNext(only, stats, []).key === '7x8') hits++;
 const fair = 10000 / AP.questions.factsFor('mul', only).length;

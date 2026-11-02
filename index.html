@@ -54,6 +54,7 @@
         <button data-key="back" class="key-back" aria-label="Delete">⌫</button>
         <button data-key="0">0</button>
         <button data-key="ok" class="key-ok" aria-label="Check answer">✓</button>
+        <button data-key="minus" class="key-minus" aria-label="Minus" hidden>−</button>
       </div>
     </div>
 
@@ -122,11 +123,17 @@
         <legend>Questions</legend>
         <label class="check"><input type="checkbox" id="set-type-mul"> Times tables (×)</label>
         <label class="check"><input type="checkbox" id="set-type-div"> Division from the tables (÷)</label>
-        <label class="check"><input type="checkbox" id="set-type-addsub100"> Add and subtract to 100</label>
-        <label class="check"><input type="checkbox" id="set-type-addsub1000"> Add and subtract to 1000</label>
         <p class="hint">Which times tables (used for × and ÷):</p>
         <div class="tables" id="set-tables"></div>
         <label class="check"><input type="checkbox" id="set-skip-easy"> Skip the easy ×1 and ×10 facts</label>
+        <label class="check check-gap"><input type="checkbox" id="set-type-addsub"> Adding and subtracting (+ −)</label>
+        <div class="row">Numbers from
+          <input type="number" id="set-addsub-min" min="-1000" max="1" aria-label="Smallest number">
+          to
+          <input type="number" id="set-addsub-max" min="5" max="1000" inputmode="numeric" aria-label="Biggest number">
+        </div>
+        <p class="hint">Both numbers and the answer stay in this range. From 1 keeps everything
+          positive; below 0 brings in negatives, like −4 − (−7).</p>
       </fieldset>
 
       <fieldset>
@@ -164,6 +171,7 @@
     <div class="progress-counts" id="progress-counts"></div>
     <p class="hint">Faded rows are tables that are switched off in settings.</p>
     <h3>Adding and subtracting</h3>
+    <p class="hint" id="progress-range"></p>
     <ul class="skills" id="progress-skills"></ul>
   </section>
 

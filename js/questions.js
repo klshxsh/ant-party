@@ -3,31 +3,29 @@ window.AP = window.AP || {};
 // Question generation and weak-fact weighting.
 //
 // × and ÷ are tracked per fact ("7x8", "56/7"). +/− have far too many possible
-// questions to track one by one, so they are tracked per skill bucket
-// ("add100-carry", "sub1000-plain", ...) and the numbers are made up fresh each time.
+// questions to track one by one, so they are tracked per sign pattern ("add-pn" is
+// 8 + (−5)) and the numbers are made up fresh each time, within the grown-ups' range.
 AP.questions = (() => {
   const { rand, pick, weightedPick } = AP.util;
 
   // Average answer time (ms) above which a fact counts as slow.
-  const SLOW_MS = { mul: 6000, div: 7000, addsub100: 12000, addsub1000: 20000 };
+  const SLOW_MS = { mul: 6000, div: 7000, addsub: 12000 };
   // Ignore anything longer: the child probably wandered off.
   const MAX_MS = 60000;
 
-  // Carrying/borrowing buckets get double weight: that's the useful practice.
-  const BUCKETS = {
-    addsub100: [
-      { key: 'add100-carry', op: '+', regroup: true, base: 2 },
-      { key: 'add100-plain', op: '+', regroup: false, base: 1 },
-      { key: 'sub100-borrow', op: '-', regroup: true, base: 2 },
-      { key: 'sub100-plain', op: '-', regroup: false, base: 1 },
-    ],
-    addsub1000: [
-      { key: 'add1000-carry', op: '+', regroup: true, base: 2 },
-      { key: 'add1000-plain', op: '+', regroup: false, base: 1 },
-      { key: 'sub1000-borrow', op: '-', regroup: true, base: 2 },
-      { key: 'sub1000-plain', op: '-', regroup: false, base: 1 },
-    ],
-  };
+  // +/− buckets by the signs of the two numbers: p = positive, n = negative.
+  // ans narrows the answer's sign where that makes a different skill (5 − 13).
+  const BUCKETS = [
+    { key: 'add-pp', op: '+', a: 'p', b: 'p' },
+    { key: 'sub-pp', op: '-', a: 'p', b: 'p', ans: 'p' },
+    { key: 'sub-below0', op: '-', a: 'p', b: 'p', ans: 'n' },
+    { key: 'add-pn', op: '+', a: 'p', b: 'n' },
+    { key: 'add-np', op: '+', a: 'n', b: 'p' },
+    { key: 'add-nn', op: '+', a: 'n', b: 'n' },
+    { key: 'sub-pn', op: '-', a: 'p', b: 'n' },
+    { key: 'sub-np', op: '-', a: 'n', b: 'p' },
+    { key: 'sub-nn', op: '-', a: 'n', b: 'n' },
+  ];
 
   function factors(settings) {
     const all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -44,7 +42,8 @@ AP.questions = (() => {
       }
       return out;
     }
-    return BUCKETS[type].map(bucket => ({ type, ...bucket }));
+    // Only the patterns that fit in the range, e.g. none with negatives when it starts at 1.
+    return BUCKETS.filter(bucket => bounds(bucket, settings)).map(bucket => ({ type, ...bucket, base: 1 }));
   }
 
   function hasCarry(a, b) {
@@ -61,32 +60,49 @@ AP.questions = (() => {
     return false;
   }
 
-  // Makes up numbers for a +/− bucket. Operands avoid round numbers (too easy).
-  function addSubNumbers(fact) {
-    const big = fact.type === 'addsub1000';
-    const round = big ? 100 : 10;
-    for (let attempt = 0; attempt < 1000; attempt++) {
-      let a, b;
-      if (fact.op === '+') {
-        a = big ? rand(101, 899) : rand(11, 89);
-        b = big ? rand(101, 899) : rand(11, 89);
-        if (a + b > (big ? 1000 : 100)) continue;
-        if (hasCarry(a, b) !== fact.regroup) continue;
-      } else {
-        a = big ? rand(201, 1000) : rand(21, 100);
-        b = big ? rand(101, a - 1) : rand(11, a - 1);
-        if (a - b < (big ? 30 : 6)) continue; // e.g. 25 − 24 is too trivial
-        if (hasBorrow(a, b) !== fact.regroup) continue;
-      }
-      if (a % round === 0 && fact.op === '+') continue;
-      if (b % round === 0) continue;
-      return [a, b];
-    }
-    // Practically unreachable, but never hand back a broken question.
-    return fact.op === '+' ? [big ? 238 : 27, big ? 147 : 15] : [big ? 512 : 52, big ? 238 : 27];
+  // Carrying or borrowing in the sum worked on the sizes of the numbers:
+  // −27 + 15 is really 27 − 15.
+  function regroups(a, d) {
+    const [x, y] = [Math.abs(a), Math.abs(d)];
+    return (a < 0) === (d < 0) ? hasCarry(x, y) : hasBorrow(Math.max(x, y), Math.min(x, y));
   }
 
-  function build(fact) {
+  // Both numbers and the answer stay within [addsubMin, addsubMax], and neither
+  // number is 0. The answer is a + d, where d is b for + and −b for −. Returns the
+  // values a can take (and the limits for d and the answer), or null when the
+  // bucket can't be made in this range.
+  function bounds(fact, settings) {
+    const { addsubMin: min, addsubMax: max } = settings;
+    const span = sign => (sign === 'p' ? [1, max] : [min, -1]);
+    const [aLo, aHi] = span(fact.a);
+    const [bLo, bHi] = span(fact.b);
+    const [dLo, dHi] = fact.op === '+' ? [bLo, bHi] : [-bHi, -bLo];
+    const lo = fact.ans === 'p' ? Math.max(min, 1) : min;
+    const hi = fact.ans === 'n' ? Math.min(max, -1) : max;
+    if (aLo > aHi || bLo > bHi || lo > hi) return null;
+    const from = Math.max(aLo, lo - dHi);
+    const to = Math.min(aHi, hi - dLo);
+    return from <= to ? { from, to, dLo, dHi, lo, hi } : null;
+  }
+
+  // Makes up numbers for a +/− bucket. Two times in three it looks for carrying or
+  // borrowing (the useful practice). It avoids round numbers like 30 and numbers under
+  // a tenth of the range, like 2 when it goes to 100 (too easy).
+  function addSubNumbers(fact, settings) {
+    const r = bounds(fact, settings);
+    const small = Math.max(-settings.addsubMin, settings.addsubMax) / 10;
+    const wantRegroup = Math.random() < 2 / 3;
+    let a, d;
+    for (let attempt = 0; attempt < 30; attempt++) {
+      a = rand(r.from, r.to);
+      d = rand(Math.max(r.dLo, r.lo - a), Math.min(r.dHi, r.hi - a));
+      const tooEasy = [a, d].some(n => Math.abs(n) < small || (Math.abs(n) >= 10 && n % 10 === 0));
+      if (regroups(a, d) === wantRegroup && !tooEasy) break;
+    }
+    return [a, fact.op === '+' ? d : -d];
+  }
+
+  function build(fact, settings) {
     if (fact.type === 'mul') {
       const [x, y] = Math.random() < 0.5 ? [fact.a, fact.b] : [fact.b, fact.a];
       return { type: fact.type, key: fact.key, text: `${x} × ${y}`, answer: fact.a * fact.b };
@@ -94,10 +110,13 @@ AP.questions = (() => {
     if (fact.type === 'div') {
       return { type: fact.type, key: fact.key, text: `${fact.a * fact.b} ÷ ${fact.a}`, answer: fact.b };
     }
-    const [a, b] = addSubNumbers(fact);
+    const [a, b] = addSubNumbers(fact, settings);
+    const { formatNumber } = AP.util;
+    // A negative second number goes in brackets: 8 − (−5).
+    const second = b < 0 ? `(${formatNumber(b)})` : formatNumber(b);
     return fact.op === '+'
-      ? { type: fact.type, key: fact.key, text: `${a} + ${b}`, answer: a + b }
-      : { type: fact.type, key: fact.key, text: `${a} − ${b}`, answer: a - b };
+      ? { type: fact.type, key: fact.key, text: `${formatNumber(a)} + ${second}`, answer: a + b }
+      : { type: fact.type, key: fact.key, text: `${formatNumber(a)} − ${second}`, answer: a - b };
   }
 
   // Higher weight = asked more often. Unseen facts get a small nudge.
@@ -114,13 +133,18 @@ AP.questions = (() => {
     return Object.keys(settings.types).filter(t => settings.types[t] && SLOW_MS[t]);
   }
 
+  // Whether an answer can be below zero, so the keypad needs a minus key.
+  function negatives(settings) {
+    return !!settings.types.addsub && settings.addsubMin < 0;
+  }
+
   // recentKeys: keys asked in the last few questions, avoided when possible.
   function pickNext(settings, stats, recentKeys) {
     const type = pick(enabledTypes(settings));
     const facts = factsFor(type, settings);
     const fresh = facts.filter(f => !recentKeys.includes(f.key));
     const fact = weightedPick(fresh.length ? fresh : facts, f => weight(f, stats[f.key]));
-    return build(fact);
+    return build(fact, settings);
   }
 
   // err and ms are moving averages, so a fact stops being "weak" once it's learned.
@@ -141,5 +165,5 @@ AP.questions = (() => {
     return 'strong';
   }
 
-  return { pickNext, record, rating, factsFor, enabledTypes, hasCarry, hasBorrow };
+  return { pickNext, record, rating, factsFor, enabledTypes, negatives, hasCarry, hasBorrow, regroups };
 })();

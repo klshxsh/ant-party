@@ -33,4 +33,9 @@ AP.util = {
   clamp(n, lo, hi) {
     return Math.min(hi, Math.max(lo, n));
   },
+
+  // Negative numbers get a proper minus sign: −5, not -5.
+  formatNumber(n) {
+    return n < 0 ? `−${-n}` : String(n);
+  },
 };

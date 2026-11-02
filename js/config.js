@@ -5,7 +5,9 @@ AP.config = {
     foodEvery: 5,   // N: choose a food after this many questions
     partyAt: 20,    // M: the party starts after this many questions
     maxTries: 0,    // tries before the answer is shown; 0 = unlimited
-    types: { mul: true, div: true, addsub100: false, addsub1000: false },
+    types: { mul: true, div: true, addsub: false },
+    addsubMin: -20, // + and −: every number, answers too, stays in this range.
+    addsubMax: 20,  // A minimum of 1 keeps them all positive.
     tables: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     skipEasy: true, // leave out ×1 and ×10 as the second factor
     sfx: true,
@@ -17,6 +19,8 @@ AP.config = {
   limits: {
     foodEvery: [1, 25],
     partyAt: [1, 60],
+    addsubMin: [-1000, 1],
+    addsubMax: [5, 1000],
     volume: [0, 100],
   },
 

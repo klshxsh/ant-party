@@ -16,9 +16,9 @@ from `file://`, so:
 
 - `node tools/check-questions.js`: question generators, weak-fact weighting, round timing.
   Exits non-zero on failure.
-- `node tools/play-round.mjs <out-dir> [WxH]`: plays a full round in headless Chrome
+- `node tools/play-round.mjs <out-dir> [WxH]`: plays a full round (×, ÷ and +/− with negatives) in headless Chrome
   and saves screenshots (home, question, wrong answer, walking ant, food, party arriving, party, album,
-  saved party, settings, progress) and logs which music is playing at each stage.
+  saved party, settings, progress, +/− skills) and logs which music is playing at each stage.
   Exits non-zero on JS errors. Check both phone (`390x844`) and tablet (`820x1180`) sizes
   after UI changes, and look at the screenshots.
 
