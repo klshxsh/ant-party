@@ -152,12 +152,12 @@ Home also links to: Album · Settings
    nibble the foods two to a dish and dance in rows; tap an ant for a speech bubble.
    Layout scales from 1 ant/1 food up to 60 ants or 30 foods.
 4. ✅ **Memory**: "Save to album" on the party; album screen (newest first, up to 50)
-   where each party can be replayed; grown-ups' Progress screen with a 12×12 × / ÷ grid
+   where each party can be replayed; a Progress screen with a 12×12 × / ÷ grid
    (strong / getting there / tricky / not tried, with symbols as well as colours) and the
    +/− skills list; "Clear party album" in settings.
 5. ✅ **Sound**: Web Audio effects (correct chime, soft boop, footsteps, food pop, party
-   whoosh, an ant's hello); music crossfades between screens (home tune also on the album
-   and grown-ups' screens, quieter quiz loop, one-shot food jingle, party loop); mute button
+   whoosh, an ant's hello); music crossfades between screens (home tune also on the album,
+   settings and progress screens, quieter quiz loop, one-shot food jingle, party loop); mute button
    on every screen (remembered); music volume in settings. Placeholder chiptune WAVs come
    from `tools/make-placeholder-audio.py`.
 5.5. ✅ **Adjustments**: +/− to 100 and to 1000 replaced by one +/− type with a min/max

@@ -73,7 +73,7 @@ AP.prefs = (() => {
     return s;
   }
 
-  // Problems a grown-up should fix before saving; empty when the settings are fine.
+  // Problems to fix before saving; empty when the settings are fine.
   function problems(s) {
     const out = [];
     if (!Object.values(s.types).some(Boolean)) out.push('Pick at least one kind of question.');

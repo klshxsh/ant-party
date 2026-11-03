@@ -31,7 +31,7 @@ AP.config = {
 
   // Music files. Swap in your own here: any format the browser plays (mp3, ogg, m4a,
   // wav). A missing file is skipped quietly. volume is relative to the music setting;
-  // loop: false plays once each time. home also plays on the album and grown-ups' screens.
+  // loop: false plays once each time. home also plays on the album, settings and progress screens.
   music: {
     home: { src: 'audio/main-theme.wav' },
     quiz: { src: 'audio/quiz-theme.wav', volume: 0.5 },

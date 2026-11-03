@@ -534,7 +534,6 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 }
 .balloon {
   position: absolute;
-  top: 22%;
   width: 5cqw;
   aspect-ratio: 4 / 5;
   border-radius: 50%;
@@ -930,7 +929,7 @@ h1, h2 { margin: 0 0 12px; color: var(--forest); }
 }
 
 /* Gentler animations: the calm class on <html> (see AP.updateMotion in main.js), set by
-   the grown-ups or by the device asking for reduced motion. Nothing loops except blinks,
+   the setting or by the device asking for reduced motion. Nothing loops except blinks,
    one-off effects get smaller or fade instead, and the ants still walk to the party. */
 .calm .answer.right,
 .calm .answer.wrong { animation: none; }

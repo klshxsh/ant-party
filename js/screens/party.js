@@ -304,13 +304,15 @@ AP.screens.party = (() => {
       wiggle(el, 'spin');
       AP.audio.sfx('sparkle');
     },
-    // The tent wobbles and lets off some balloons.
+    // The tent wobbles and lets off some balloons, from anywhere in the bottom half
+    // of the scene so lots of taps fill the sky.
     tent(el) {
       wiggle(el.querySelector('svg'), 'wobble');
       AP.audio.sfx('boing');
       for (let i = 0; i < 4; i++) {
         spawn('balloon', [
-          `left:${(80 + Math.random() * 8).toFixed(1)}%`,
+          `left:${(5 + Math.random() * 88).toFixed(1)}%`,
+          `top:${(55 + Math.random() * 35).toFixed(1)}%`,
           `background:${AP.util.pick(CONFETTI_COLOURS)}`,
           `--drift:${((Math.random() - 0.6) * 30).toFixed(1)}cqw`,
           `animation-delay:${i * 250}ms`,

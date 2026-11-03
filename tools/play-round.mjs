@@ -159,9 +159,9 @@ await music('at the party');
 
 // Easter eggs: the sun, the tent, a food, then every bunting flag for the finale.
 await click('.party-sun');
-await click('.party-tent');
+for (let i = 0; i < 3; i++) await click('.party-tent'); // lots of balloons
 await click('.party-food');
-await sleep(400);
+await sleep(900);
 await shot('7-party-eggs');
 await js(`document.querySelectorAll('.party-flag').forEach(f => f.dispatchEvent(new MouseEvent('click', { bubbles: true })))`);
 await sleep(500);

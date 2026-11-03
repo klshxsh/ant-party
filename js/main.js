@@ -6,7 +6,7 @@ AP.state = {
   round: null,
 };
 
-// Gentler animations, when the grown-ups ask for them or the device asks for reduced
+// Gentler animations, when the setting asks for them or the device asks for reduced
 // motion. The calm class on <html> switches the CSS over (see the end of style.css).
 AP.deviceCalm = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 AP.calm = () => AP.state.settings.calm || AP.deviceCalm();

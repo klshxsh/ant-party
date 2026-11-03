@@ -35,7 +35,6 @@ AP.screens.quiz = (() => {
 
     $('quiz-reveal-ok').addEventListener('click', revealDone);
     $('quiz-home').addEventListener('click', () => {
-      if (!confirm('Leave this round? The ants will head home.')) return;
       AP.state.round = null; // cancels any pending timers below
       AP.show('home');
     });

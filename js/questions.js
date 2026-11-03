@@ -4,7 +4,7 @@ window.AP = window.AP || {};
 //
 // × and ÷ are tracked per fact ("7x8", "56/7"). +/− have far too many possible
 // questions to track one by one, so they are tracked per sign pattern ("add-pn" is
-// 8 + (−5)) and the numbers are made up fresh each time, within the grown-ups' range.
+// 8 + (−5)) and the numbers are made up fresh each time, within the range in settings.
 AP.questions = (() => {
   const { rand, pick, weightedPick } = AP.util;
 
@@ -162,7 +162,7 @@ AP.questions = (() => {
       : { n: 1, err: miss, ms: Math.round(ms) };
   }
 
-  // How well a fact is known, for the grown-ups' progress view.
+  // How well a fact is known, for the progress view.
   function rating(type, s) {
     if (!s) return 'new';
     if (s.err >= 0.4 || s.ms > 2 * SLOW_MS[type]) return 'tricky';

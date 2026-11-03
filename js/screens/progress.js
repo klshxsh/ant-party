@@ -1,6 +1,6 @@
 AP.screens = AP.screens || {};
 
-// Grown-ups' progress view: a 12×12 grid of the × or ÷ facts coloured by how well
+// Progress view: a 12×12 grid of the × or ÷ facts coloured by how well
 // each is known, and a list of the +/− skills.
 AP.screens.progress = (() => {
   const $ = id => document.getElementById(id);
